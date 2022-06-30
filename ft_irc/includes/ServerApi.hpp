@@ -6,7 +6,7 @@
 /*   By: ifanzilka <ifanzilka@student.42.fr>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/04/14 00:49:56 by bmarilli          #+#    #+#             */
-/*   Updated: 2022/06/29 05:34:11 by ifanzilka        ###   ########.fr       */
+/*   Updated: 2022/06/30 05:34:37 by ifanzilka        ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,6 +23,7 @@
 #include <unistd.h>		/* write */
 #include <fcntl.h>		/* fcntl */
 
+#include <iomanip>
 #include <fstream>
 #include <iostream>		/* std cout */
 #include <ctime>		/* time */
