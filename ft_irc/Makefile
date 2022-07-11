@@ -1,3 +1,8 @@
+## HELPER
+
+## USE nc: nc 127.0.0.1 port 
+
+
 CXX = clang++
 
 #Compilation flag
