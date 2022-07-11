@@ -148,7 +148,7 @@ void AbstractServerApi::PrintIpPort()
 
 void AbstractServerApi::Logger(std::string msg)
 {
-	char buffer[80];
+	//char buffer[80];
 	time_t seconds = time(NULL);
 	tm* timeinfo = localtime(&seconds);
 
@@ -167,7 +167,7 @@ void AbstractServerApi::Logger(std::string color, std::string msg)
 {
 	#ifdef LOGGER_ENABLE
 
-	char buffer[80];
+	//char buffer[80];
 	time_t seconds = time(NULL);
 	tm* timeinfo = localtime(&seconds);
 

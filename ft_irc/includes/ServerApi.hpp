@@ -6,7 +6,7 @@
 /*   By: ifanzilka <ifanzilka@student.42.fr>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/04/14 00:49:56 by bmarilli          #+#    #+#             */
-/*   Updated: 2022/06/30 05:34:37 by ifanzilka        ###   ########.fr       */
+/*   Updated: 2022/07/12 02:24:12 by ifanzilka        ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,6 +34,7 @@
 #define	SERVER_TYPE			SOCK_STREAM //TCP
 #define MAX_CONNECT_LISTEN 	15			//In Listen
 #define	BUFFER_SIZE_SEND	2			//
+#define RECV_BUFFER_SIZE	15			//Read
 
 #define LOGGER_ENABLE		0			//1 - ON, 0 - OFF
 
