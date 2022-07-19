@@ -1,10 +1,18 @@
 #include <ServerApi.hpp>
 
+
+/* 
+** Constructor
+*/
+
 void AbstractServerApi::Init(std::string& ipaddr, int port)
 {
 	_ipaddr = ipaddr;
 	_port = port;
-	PrintIpPort();
+	
+	std::cout << PURPLE;
+	std::cout << "Ip address: " << _ipaddr << "\n";
+	std::cout << "Port: " << _port << NORM << "\n";
 
 	/*
 		AF_UNIX, AF_LOCAL- Местная связь
@@ -37,7 +45,7 @@ void AbstractServerApi::Init(std::string& ipaddr, int port)
 		log_file_name += ports;
 		log_file_name += "_log.txt";
 		_logs.open(log_file_name, std::ios::ate);
-		Logger(std::string("Init Server!"));
+		Logger(GREEN, std::string("Init Server!"));
 	#endif
 }
 
@@ -49,6 +57,7 @@ int AbstractServerApi::Create_socket()
 		ServerError("Socket()");
 
 	std::cout << GREEN << "Socket fd(" <<  _server_fd << ") successfully created ✅ " << NORM << "\n";
+	
 	/* Non block socket*/
     fcntl(_server_fd, F_SETFL, O_NONBLOCK);
 	return (_server_fd);
@@ -59,7 +68,6 @@ int AbstractServerApi::Binded()
 	int yes = 1;
 	if (setsockopt(_server_fd, SOL_SOCKET, SO_REUSEADDR, &yes, sizeof(int)) < 0)
 		ServerError("Setsokport");
-
 	int bind_ = bind(_server_fd, (const struct sockaddr *)&_servaddr, sizeof(_servaddr));
 	if (bind_ < 0)
 		ServerError("Bind: ");
@@ -78,9 +86,14 @@ int AbstractServerApi::Listen()
 	return (_listen);
 }
 
+
+/*
+**	MAIN FUNCTIONAL
+*/
+
 int	AbstractServerApi::Accept()
 {
-	//Logger(BLUE, "Accept...");
+	Logger(BLUE, "Accept...");
 
 	struct sockaddr_in	clientaddr;
 	socklen_t 			len;
@@ -91,77 +104,34 @@ int	AbstractServerApi::Accept()
 	client_fd = accept(_server_fd, (struct sockaddr *)&clientaddr, (socklen_t *)&len);
 	if (client_fd == -1)
 	{
-		//ServerError("Accept");
+		ServerError("Accept");
 		return (-1);
 	}
 
 	Logger(GREEN, "New connection as fd:(" + std::to_string(client_fd) + ") ✅ ");
-	AddClient(client_fd, clientaddr);
 	return (client_fd);
 }
 
-void	AbstractServerApi::AddClient(int fd, struct sockaddr_in addrclient)
-{
-	fcntl(fd, F_SETFL, O_NONBLOCK);
 
-	Client client(fd, addrclient);
-	_clients.push_back(client);
-	Logger(GREEN, "Add client in vector ✅ ");
-}
-
-void AbstractServerApi::RemoveClient(int fd)
-{
-	Logger(B_GRAY, "Remove client " + std::to_string(fd));
-
-	std::vector<Client>::iterator	it;
-	std::vector<Client>::iterator	it_end;
-
-	it = _clients.begin();
-	it_end = _clients.end();
-
-	while (it < it_end)
-	{
-		if (it->getFd() == fd)
-		{
-			_clients.erase(it);
-			return;
-		}
-		it++;
-	}
-}
+/*
+** Getters
+*/
 
 std::string	AbstractServerApi::GetHostName() 
 {
     return (_ipaddr);
 }
+
+
 int	AbstractServerApi::GetPort()
 {
     return (_port);
 }
 
-void AbstractServerApi::PrintIpPort()
-{
-	std::cout << PURPLE;
-	std::cout << "Ip address: " << _ipaddr << "\n";
-	std::cout << "Port: " << _port << NORM << "\n";
-}
+/*
+** FUNCTION
+*/
 
-void AbstractServerApi::Logger(std::string msg)
-{
-	//char buffer[80];
-	time_t seconds = time(NULL);
-	tm* timeinfo = localtime(&seconds);
-
-	_logs << "[";
-	_logs << std::put_time(timeinfo, "%d") << " ";
-	_logs << std::put_time(timeinfo, "%b") << " ";
-	_logs << std::put_time(timeinfo, "%Y") << " ";
-	_logs << std::put_time(timeinfo, "%I") << ":";
-	_logs << std::put_time(timeinfo, "%M") << ":";
-	_logs << std::put_time(timeinfo, "%S") << "]: ";
-
-	_logs << msg << std::endl;
-}
 
 void AbstractServerApi::Logger(std::string color, std::string msg)
 {
@@ -179,8 +149,17 @@ void AbstractServerApi::Logger(std::string color, std::string msg)
 	_logs << std::put_time(timeinfo, "%M") << ":";
 	_logs << std::put_time(timeinfo, "%S") << "]: ";
 	_logs << msg << std::endl;
-	std::cout << color << msg << NORM <<std::endl;
 
+	std::cout << YELLOW;
+	std::cout << "[";
+	std::cout << std::put_time(timeinfo, "%d") << " ";
+	std::cout << std::put_time(timeinfo, "%b") << " ";
+	std::cout << std::put_time(timeinfo, "%Y") << " ";
+	std::cout << std::put_time(timeinfo, "%I") << ":";
+	std::cout << std::put_time(timeinfo, "%M") << ":";
+	std::cout << std::put_time(timeinfo, "%S") << "]: " << NORM;
+	std::cout << color << msg << NORM <<std::endl;
+	
 	#endif
 }
 
@@ -188,12 +167,16 @@ void AbstractServerApi::PrintSockaddrInfo(struct sockaddr_in *info)
 {
 	char ip4[INET_ADDRSTRLEN]; // место для строки IPv4
 	int port;
+	std::string msg;
+
 
 	port =  ntohs(info->sin_port);
-
 	inet_ntop(AF_INET, &(info->sin_addr), ip4, INET_ADDRSTRLEN);//заполнили ip
-	//Logger(PURPLE,"IPv4 address is: " + std::string(ip4) + std::to_string(port));
-	//printf(PURPLE"IPv4 address is: %s:%d"NORM"\n", ip4, port);
+
+	msg = "IPv4 address is: ";
+	msg += std::string(ip4);
+	msg += std::to_string(port);
+	Logger(PURPLE, msg);
 }
 
 void AbstractServerApi::ServerError(const char *s)
@@ -210,13 +193,19 @@ void AbstractServerApi::ServerError(const char *s)
 	full += ": ";
 	full += err;
 
-	Logger(full);
+	Logger(RED, full);
 	std::cerr << RED << full << NORM << "\n";
 	//throw std::runtime_error(full);
 	exit(42);
 }
 
+
+/*
+** Destructor
+*/
+
 AbstractServerApi::~AbstractServerApi()
 {
+	Logger(RED, "Call ServerApi Destructor❌ ");
 	close(_server_fd);
 }

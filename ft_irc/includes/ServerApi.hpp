@@ -6,7 +6,7 @@
 /*   By: ifanzilka <ifanzilka@student.42.fr>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/04/14 00:49:56 by bmarilli          #+#    #+#             */
-/*   Updated: 2022/07/12 02:24:12 by ifanzilka        ###   ########.fr       */
+/*   Updated: 2022/07/20 00:42:00 by ifanzilka        ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -36,39 +36,48 @@
 #define	BUFFER_SIZE_SEND	2			//
 #define RECV_BUFFER_SIZE	15			//Read
 
-#define LOGGER_ENABLE		0			//1 - ON, 0 - OFF
+#define LOGGER_ENABLE		1			//1 - ON, 0 - OFF
 
 class Client
 {
 	public:
 		Client(int fd_client, sockaddr_in 	addrinfo_client)
 		{
-			fd = fd_client;
-			addrinfo = addrinfo_client;
+			_fd = fd_client;
+			_addrinfo = addrinfo_client;
 		};
 
-		int getFd() const { return (fd); }
-		struct sockaddr_in getAddrInfo() const { return (addrinfo); }
+		int getFd() const
+		{ 
+			return (_fd);
+		}
+		
+		struct sockaddr_in getAddrInfo() const
+		{
+			return (_addrinfo);
+		}
+
 	private:
-		struct sockaddr_in 	addrinfo;
-		int					fd;
+		struct sockaddr_in 	_addrinfo;
+		int					_fd;
+		std::string			_name;
 };
 
 class AbstractServerApi
 {
 	public:
 
-		virtual	int			WaitEvent(int &client_fd) = 0;
-		virtual int			CheckAccept() = 0;
-		virtual	int 		CheckRead() = 0;
+		/* Virtual i talk mast have in realizate */
+		//virtual	int			WaitEvent(int &client_fd) = 0;
+		//virtual int			CheckAccept() = 0;
+		//virtual	int 		CheckRead() = 0;
 		//virtual int		CheckWrite() = 0;
 		//		virtual	int			ReadFd(int fd);
 
 
 		std::string			GetHostName();
 		int					GetPort();
-
-		static void 		PrintSockaddrInfo(struct sockaddr_in *info);
+		void				PrintSockaddrInfo(struct sockaddr_in *info);
 
 		/* Destructor */
 		virtual				 ~AbstractServerApi();
@@ -82,28 +91,19 @@ class AbstractServerApi
 		int 				_server_fd;
 		int					_fd_log_file;
 
-		/*  Подключенные клиенты и их информация */
-		std::vector<class Client>		_clients;
-		std::string						_client_rqst_msg;
-
-		/* Говорю что можно переопределить*/
+	
+		/* Говорю что можно переопределить */
 		virtual	void		Init(std::string& ipaddr, int port);
 		virtual int 		Create_socket();
 		virtual int 		Binded();
 		virtual int 		Listen();
 		virtual	int 		Accept();
 
-		void				AddClient(int fd, struct sockaddr_in addrclient);
-		void				RemoveClient(int fd);
 
 		/* Print Errno */
 		virtual	void	ServerError(const char *s);
-		void 			Logger(std::string msg);
 		void			Logger(std::string color,std::string msg);
-	private:
-		void 			PrintIpPort();
 
 };
-
 
 #endif

@@ -1,10 +1,8 @@
 //#include <Include_Library.hpp>
 #include <ServerSelect.hpp>
 
-/**
-==============================================
-==        Constructors and Destructor       ==
-==============================================
+/* 
+** Constructor
 */
 
 void ServerSelect::Init_Serv()
@@ -40,13 +38,18 @@ ServerSelect::ServerSelect(const char *ipaddr, int port)
 	Init_Serv();
 }
 
-/**
-==============================================
-==               StartUp methods            ==
-==============================================
+
+/*
+** Main Functional
 */
 
-int	ServerSelect::WaitEvent(int &client_fd)
+
+
+/* 
+** Simple Use
+*/
+
+void ServerSelect::Start()
 {
 	struct timeval 	time;
 	int 			_select;
@@ -54,154 +57,246 @@ int	ServerSelect::WaitEvent(int &client_fd)
 	time.tv_sec = 0;
 	time.tv_usec = 0;
 
-
 	/* Множества приравниваю */
 	_writefds = _readfds = _currfds;
-
 	Logger(BLUE, "Wait select...");
 
 	/* Останавливаю процесс для отловки событий */
 	_select = select(_max_fd + 1, &_readfds, NULL, NULL, NULL);
-
 	Logger(B_GRAY, "Select signal is " + std::to_string(_select));
 
+	/*  Error */
 	if (_select == -1)
 	{
-		if (errno == EINTR)
-		{	/* Нас прервал сигнал*/
-			return (-1);
-		}
-		else
+		AbstractServerApi::ServerError("Select -1");
+	}
+	else if (_select == 0) 
+	{
+		/* TimeOut in Select */
+		Logger(RED, "TimeOut Select ");
+		//return (0);
+	}
+	else
+	{
+		int client_fd;
+		
+		/* Check new client */
+		if (FD_ISSET(_server_fd, &_readfds))
 		{
-			AbstractServerApi::ServerError("Select");
+			client_fd = AbstractServerApi::Accept();
+			if (client_fd > 0)
+			{
+				FD_SET(client_fd, &_currfds);
+				_max_fd = client_fd > _max_fd ? client_fd : _max_fd;
+
+				//Good
+				//add in new client
+				//Logger(GREEN, "Add new Connection in fd: " + std::to_string(client_fd));	
+			}
+			return;
 		}
-	}
-	else if (_select == 0)
-	{
-		std::cout << RED << "TimeOut" << NORM << std::endl;
-		/* Fun */
-		return (0);
-	}
-	return (_select);
-}
 
-/* Проверяю на чтение если нету возвращаю 0, иначе fd откуда читать */
-int	ServerSelect::CheckRead()
-{
-	Logger(BLUE, "Check read...");
-
-	std::vector<Client>::iterator	it_begin;
-	std::vector<Client>::iterator	it_end;
-
-
-	it_begin = _clients.begin();
-	it_end = _clients.end();
-
-
-	/* Проверяю дескрипторы на то что пришло ли что то чтение */
-	while (it_begin != it_end)
-	{
-		/* message receives from curr_cli */
-		if (FD_ISSET((*it_begin).getFd(), &_readfds))
+		for (int i = 0; i < _max_fd + 1; i++)
 		{
 
-			//ReadFd((*it_begin).first);
-			return ((*it_begin).getFd());
+			if (FD_ISSET(i, &_readfds))
+			{
+
+				Logger(PURPLE, std::to_string(i) + " ready in READ");
+
+				int rc;
+				char buffer[1024];
+
+				bzero(buffer, 1024);
+				rc = recv(i, buffer, sizeof(buffer), 0);
+				if (rc == 0)
+				{
+					Logger(RED, std::to_string(i) + " Connection close");
+					close(i);
+					FD_CLR(i, &_currfds);
+					return;
+				}
+				else
+				{
+					Logger(GREEN, std::to_string(i) + " message:\n" + std::string(buffer));
+					send(i, "Message Sucsefull", 17, 0);
+				}
+			}
+			
+
 		}
-		it_begin++;
 	}
-
-	return (0);
-}
-
-/* Проверяю событие на Подключение если полюкчился возвращаю fd клиента иначе 0*/
-int	ServerSelect::CheckAccept()
-{
-	Logger(BLUE, "Check Accept...");
-
-	int	client_fd;
-
-	/* Если пришло событие на connect */
-	if (FD_ISSET(_server_fd, &_readfds))
-	{
-		client_fd = Accept();
-		if (client_fd > 0)
-		{
-			AddFd(client_fd);
-			return (client_fd);
-		}
-		return (client_fd);
-
-	}
-	return (0);
 }
 
 
-void	ServerSelect::AddFd(int fd)
-{
-	Logger(B_GRAY, "Add fd " + std::to_string(fd));
+/*
+** Destructor
+*/
 
-	/* Добавляю во множество */
-	FD_SET(fd, &_currfds);
-
-	//for select
-	_max_fd = fd > _max_fd ? fd : _max_fd;
-}
-
-
-void ServerSelect::RemoveFd(int fd)
-{
-	Logger(B_GRAY, "Remove fd " + std::to_string(fd));
-
-	/* Удаление из множества */
-	FD_CLR(fd, &_currfds);
-
-	RemoveClient(fd); //TODO: переименовать в Remove
-}
-
-int ServerSelect::ReadFd(int fd)
-{
-	Logger(GREEN, "Readble is ready: fd(" + std::to_string(fd) + ") ✅ ");
-
-	char buffer[RECV_BUFFER_SIZE];
-	bzero(buffer, RECV_BUFFER_SIZE);
-
-	int ret = recv(fd, buffer, RECV_BUFFER_SIZE - 1, 0);
-	if (ret == 0)
-	{
-		Logger(RED, "Disconnect  fd(" + std::to_string(fd) + ") ❌ ");
-		RemoveFd(fd);
-		return (0);
-	}
-
-	_client_rqst_msg.resize(0);
-	_client_rqst_msg += buffer;
-
-	Logger(PURPLE, "Recv read " + std::to_string(ret) + " bytes");
-	Logger(B_GRAY, "buf:" + _client_rqst_msg);
-	while (ret == RECV_BUFFER_SIZE - 1)
-	{
-		ret = recv(fd, buffer, RECV_BUFFER_SIZE - 1, 0);
-		if (ret == -1)
-			break;
-
-		buffer[ret] = 0;
-		_client_rqst_msg += buffer;
-		Logger(B_GRAY, "subbuf:" + std::string(buffer));
-		Logger(PURPLE, "Replay Recv read " + std::to_string(ret) + " bytes");
-	}
-
-	Logger(GREEN, "Data is read is " + std::to_string(_client_rqst_msg.size()) + " bytes  ✅ ");
-	Logger(B_GRAY, _client_rqst_msg);
-	send(fd, "Message has send successfully\n", strlen("Message has send successfully\n"), 0);
-
-	return (_client_rqst_msg.size());
-}
-
-
-/* Destructor */
 ServerSelect::~ServerSelect()
 {
-	//TODO: закрытие сокета
 	Logger(RED, "Call ServerSelect Destructor❌ ");
 }
+
+
+
+
+
+
+
+
+
+
+
+// int	ServerSelect::WaitEvent(int &client_fd)
+// {
+// 	struct timeval 	time;
+// 	int 			_select;
+
+// 	time.tv_sec = 0;
+// 	time.tv_usec = 0;
+
+
+// 	/* Множества приравниваю */
+// 	_writefds = _readfds = _currfds;
+
+// 
+
+// 	/* Останавливаю процесс для отловки событий */
+// 	_select = select(_max_fd + 1, &_readfds, NULL, NULL, NULL);
+
+// 	Logger(B_GRAY, "Select signal is " + std::to_string(_select));
+
+// 	/*  Error */
+// 	if (_select == -1)
+// 	{
+// 		if (errno == EINTR)
+// 		{	/* Signals */
+// 			return (-1);
+// 		}
+// 		else
+// 		{
+// 			AbstractServerApi::ServerError("Select");
+// 		}
+// 	}
+// 	else if (_select == 0)
+// 	{
+// 		std::cout << RED << "TimeOut" << NORM << std::endl;
+// 		/* Fun */
+// 		return (0);
+// 	}
+// 	return (_select);
+// }
+
+// /* Проверяю на чтение если нету возвращаю 0, иначе fd откуда читать */
+// int	ServerSelect::CheckRead()
+// {
+// 	Logger(BLUE, "Check read...");
+
+// 	std::vector<Client>::iterator	it_begin;
+// 	std::vector<Client>::iterator	it_end;
+
+
+// 	it_begin = _clients.begin();
+// 	it_end = _clients.end();
+
+
+// 	/* Проверяю дескрипторы на то что пришло ли что то чтение */
+// 	while (it_begin != it_end)
+// 	{
+// 		/* message receives from curr_cli */
+// 		if (FD_ISSET((*it_begin).getFd(), &_readfds))
+// 		{
+
+// 			//ReadFd((*it_begin).first);
+// 			return ((*it_begin).getFd());
+// 		}
+// 		it_begin++;
+// 	}
+
+// 	return (0);
+// }
+
+// /* Проверяю событие на Подключение если полюкчился возвращаю fd клиента иначе 0*/
+// int	ServerSelect::CheckAccept()
+// {
+// 	Logger(BLUE, "Check Accept...");
+
+// 	int	client_fd;
+
+// 	/* Если пришло событие на connect */
+// 	if (FD_ISSET(_server_fd, &_readfds))
+// 	{
+// 		client_fd = Accept();
+// 		if (client_fd > 0)
+// 		{
+// 			AddFd(client_fd);
+// 			return (client_fd);
+// 		}
+// 		return (client_fd);
+
+// 	}
+// 	return (0);
+// }
+
+
+// void	ServerSelect::AddFd(int fd)
+// {
+// 	Logger(B_GRAY, "Add fd " + std::to_string(fd));
+
+// 	/* Добавляю во множество */
+// 	FD_SET(fd, &_currfds);
+
+// 	//for select
+// 	_max_fd = fd > _max_fd ? fd : _max_fd;
+// }
+
+
+// void ServerSelect::RemoveFd(int fd)
+// {
+// 	Logger(B_GRAY, "Remove fd " + std::to_string(fd));
+
+// 	/* Удаление из множества */
+// 	FD_CLR(fd, &_currfds);
+
+// 	RemoveClient(fd); //TODO: переименовать в Remove
+// }
+
+// int ServerSelect::ReadFd(int fd)
+// {
+// 	Logger(GREEN, "Readble is ready: fd(" + std::to_string(fd) + ") ✅ ");
+
+// 	char buffer[RECV_BUFFER_SIZE];
+// 	bzero(buffer, RECV_BUFFER_SIZE);
+
+// 	int ret = recv(fd, buffer, RECV_BUFFER_SIZE - 1, 0);
+// 	if (ret == 0)
+// 	{
+// 		Logger(RED, "Disconnect  fd(" + std::to_string(fd) + ") ❌ ");
+// 		RemoveFd(fd);
+// 		return (0);
+// 	}
+
+// 	_client_rqst_msg.resize(0);
+// 	_client_rqst_msg += buffer;
+
+// 	Logger(PURPLE, "Recv read " + std::to_string(ret) + " bytes");
+// 	Logger(B_GRAY, "buf:" + _client_rqst_msg);
+// 	while (ret == RECV_BUFFER_SIZE - 1)
+// 	{
+// 		ret = recv(fd, buffer, RECV_BUFFER_SIZE - 1, 0);
+// 		if (ret == -1)
+// 			break;
+
+// 		buffer[ret] = 0;
+// 		_client_rqst_msg += buffer;
+// 		Logger(B_GRAY, "subbuf:" + std::string(buffer));
+// 		Logger(PURPLE, "Replay Recv read " + std::to_string(ret) + " bytes");
+// 	}
+
+// 	Logger(GREEN, "Data is read is " + std::to_string(_client_rqst_msg.size()) + " bytes  ✅ ");
+// 	Logger(B_GRAY, _client_rqst_msg);
+// 	send(fd, "Message has send successfully\n", strlen("Message has send successfully\n"), 0);
+
+// 	return (_client_rqst_msg.size());
+// }

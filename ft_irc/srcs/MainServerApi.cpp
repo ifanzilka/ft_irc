@@ -14,7 +14,7 @@ int main(int argc, char **argv)
         while (1)
         {
             int a;
-            serv.WaitEvent(a);
+            serv.Start();
         }
 		//serv.Start();
 	}

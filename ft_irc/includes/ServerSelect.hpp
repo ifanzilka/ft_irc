@@ -18,13 +18,13 @@ class ServerSelect: public AbstractServerApi
 		ServerSelect(int port);
 		ServerSelect(std::string &ipaddr, int port);
 		ServerSelect(const char *ipaddr, int port);
-
+		void Start();
 		/* Events */
-		virtual	int			WaitEvent(int &client_fd);
-		virtual	int			CheckAccept();
-		virtual	int			CheckRead();
+		//virtual	int			WaitEvent(int &client_fd);
+		//virtual	int			CheckAccept();
+		//virtual	int			CheckRead();
 		//virtual void 		CheckWrite();
-		virtual	int			ReadFd(int clinet_fd);
+		//virtual	int			ReadFd(int clinet_fd);
 
 		/* Destructor */
 		virtual ~ServerSelect();
@@ -38,8 +38,6 @@ class ServerSelect: public AbstractServerApi
 		fd_set 				_readfds;
 
 		void 	Init_Serv();
-		void	AddFd(int client_fd);
-		void	RemoveFd(int client_fd);
 };
 
 #endif
