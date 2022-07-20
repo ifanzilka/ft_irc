@@ -1,4 +1,4 @@
-//#include <Include_Library.hpp>
+/* This code job in UNIX System */
 #include <ServerSelect.hpp>
 
 /* 

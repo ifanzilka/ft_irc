@@ -1,175 +1,166 @@
-/* This code job in BSD System Darwin */
-#ifdef __APPLE__
-
+/* This code job in UNIX System */
 #include "ServerPoll.hpp"
 
-	/* Constructors */
-	ServerPoll::ServerPoll(int port)
+/* Constructors */
+ServerPoll::ServerPoll(int port)
+{
+	std::string tmp = "127.0.0.1";
+	AbstractServerApi::Init(tmp, port);
+	Init_Serv();
+}
+
+ServerPoll::ServerPoll(const char *ipaddr, int port)
+{
+	std::string tmp = std::string(ipaddr);;
+	AbstractServerApi::Init(tmp, port);
+	Init_Serv();
+}
+
+ServerPoll::ServerPoll(std::string& ipaddr, int port)
+{
+	AbstractServerApi::Init(ipaddr, port);
+	Init_Serv();
+}
+
+void ServerPoll::Init_Serv()
+{
+	_logs << "ServerType: Poll 🌐 " << std::endl;
+
+	struct pollfd fd_serv;
+
+	fd_serv.fd = _server_fd;
+	fd_serv.events = POLLIN;
+	fd_serv.revents = 0;
+
+	_pollfds.push_back(fd_serv);
+}
+
+
+/* 
+** Simple Use
+*/
+
+void ServerPoll::Start()
+{
+	Logger(BLUE, "Wait Event...");
+
+	int result;
+	int timeout = -1;
+
+	result = poll(& _pollfds[0], _pollfds.size(), timeout);
+	Logger(B_GRAY, "Poll return " + std::to_string(result));
+	
+	if (result == -1)
 	{
-		std::string tmp = "127.0.0.1";
-		AbstractServerApi::Init(tmp, port);
-		Init_Serv();
+		ServerError("Poll: ");
 	}
-
-	ServerPoll::ServerPoll(const char *ipaddr, int port)
+	else if (result == EINVAL)
 	{
-		std::string tmp = std::string(ipaddr);;
-		AbstractServerApi::Init(tmp, port);
-		Init_Serv();
+		Logger(RED, "TimeOut 🕐 ");
 	}
-
-	ServerPoll::ServerPoll(std::string& ipaddr, int port)
+	else
 	{
-		AbstractServerApi::Init(ipaddr, port);
-		Init_Serv();
-	}
+		int 				client_fd;
 
-	void ServerPoll::Init_Serv()
-	{
-		_logs << "ServerType: Poll 🌐 " << std::endl;
-
-		struct pollfd fd_serv;
-
-		fd_serv.fd = _server_fd;
-		fd_serv.events = POLLIN;
-		fd_serv.revents = 0;
-
-		_pollfds.push_back(fd_serv);
-	}
-
-
-	/* 
-	** Simple Use
-	*/
-
-	void ServerPoll::Start()
-	{
-		Logger(BLUE, "Wait Event...");
-
-		int result;
-		int timeout = -1;
-
-		result = poll(& _pollfds[0], _pollfds.size(), timeout);
-		Logger(B_GRAY, "Poll return " + std::to_string(result));
-		
-		if (result == -1)
+		/* Check connect*/
+		if( _pollfds[0].revents != 0)
 		{
-			ServerError("Poll: ");
-		}
-		else if (result == EINVAL)
-		{
-			Logger(RED, "TimeOut 🕐 ");
+			client_fd = Accept();
+			if (client_fd < 0)
+			{
+				if (errno != EWOULDBLOCK)
+					ServerError("Accept");
+			}
+			else
+			{// add fd
+
+				struct pollfd fd_client;
+
+				fd_client.fd = client_fd;
+				fd_client.events = POLLIN;	//говорю какие события слушаюй
+				fd_client.revents = 0;
+				_pollfds.push_back(fd_client);
+
+			}
 		}
 		else
 		{
-			int 				client_fd;
+			int fd_read;
 
-			/* Check connect*/
-			if( _pollfds[0].revents != 0)
+			fd_read = 0;
+			/* Read */
+			Logger(BLUE, "Check read...");
+			std::vector<struct pollfd>::iterator	it = _pollfds.begin();
+			std::vector<struct pollfd>::iterator	it_end = _pollfds.end();
+
+			while (it != it_end)
 			{
-				client_fd = Accept();
-				if (client_fd < 0)
+				if (it->fd == _server_fd || it->revents  == 0)
 				{
-					if (errno != EWOULDBLOCK)
-						ServerError("Accept");
+					it++;
+					continue;
+				}
+				fd_read = it->fd;
+				Logger(GREEN, "Readble is ready: fd(" + std::to_string(fd_read) + ") ✅ ");
+				break;
+			}
+
+			if (fd_read != 0)
+			{
+				char buffer[RECV_BUFFER_SIZE];
+				bzero(buffer, RECV_BUFFER_SIZE);
+
+				int ret = recv(fd_read, buffer, RECV_BUFFER_SIZE - 1, 0);
+				if (ret == 0)
+				{
+					Logger(RED, "Disconnect fd(" + std::to_string(fd_read) + ") ❌ ");
+					Logger(B_GRAY, "Remove fd " + std::to_string(fd_read));
+					close(it->fd);
+					_pollfds.erase(it);
+
 				}
 				else
-				{// add fd
-
-					struct pollfd fd_client;
-
-					fd_client.fd = client_fd;
-					fd_client.events = POLLIN;	//говорю какие события слушаюй
-					fd_client.revents = 0;
-					_pollfds.push_back(fd_client);
-
-				}
-			}
-			else
-			{
-				int fd_read;
-
-				fd_read = 0;
-				/* Read */
-				Logger(BLUE, "Check read...");
-				std::vector<struct pollfd>::iterator	it = _pollfds.begin();
-				std::vector<struct pollfd>::iterator	it_end = _pollfds.end();
-
-				while (it != it_end)
 				{
-					if (it->fd == _server_fd || it->revents  == 0)
+					//_client_rqst_msg.resize(0);
+					//client_rqst_msg += buffer;
+					std::string msg;
+
+					msg += buffer;
+
+					Logger(PURPLE, "Recv read " + std::to_string(ret) + " bytes");
+					Logger(B_GRAY, "buff:" + std::string(buffer));
+
+					while (ret == RECV_BUFFER_SIZE - 1)
 					{
-						it++;
-						continue;
-					}
-					fd_read = it->fd;
-					Logger(GREEN, "Readble is ready: fd(" + std::to_string(fd_read) + ") ✅ ");
-					break;
-				}
+						ret = recv(client_fd, buffer, RECV_BUFFER_SIZE - 1, 0);
+						if (ret == -1)
+							break;
 
-				if (fd_read != 0)
-				{
-					char buffer[RECV_BUFFER_SIZE];
-					bzero(buffer, RECV_BUFFER_SIZE);
-
-					int ret = recv(fd_read, buffer, RECV_BUFFER_SIZE - 1, 0);
-					if (ret == 0)
-					{
-						Logger(RED, "Disconnect fd(" + std::to_string(fd_read) + ") ❌ ");
-						Logger(B_GRAY, "Remove fd " + std::to_string(fd_read));
-						close(it->fd);
-			 			_pollfds.erase(it);
-
-					}
-					else
-					{
-						//_client_rqst_msg.resize(0);
-						//client_rqst_msg += buffer;
-						std::string msg;
-
+						buffer[ret] = 0;
 						msg += buffer;
-
-						Logger(PURPLE, "Recv read " + std::to_string(ret) + " bytes");
-						Logger(B_GRAY, "buff:" + std::string(buffer));
-
-						while (ret == RECV_BUFFER_SIZE - 1)
-						{
-							ret = recv(client_fd, buffer, RECV_BUFFER_SIZE - 1, 0);
-							if (ret == -1)
-								break;
-
-							buffer[ret] = 0;
-							msg += buffer;
-							Logger(B_GRAY, "subbuf:" + std::string(buffer));
-							Logger(PURPLE, "Replay Recv read " + std::to_string(ret) + " bytes");
-						}
-
-							Logger(GREEN, "Data is read is " + std::to_string(msg.size()) + " bytes  ✅ ");
-							Logger(B_GRAY, msg);
-
+						Logger(B_GRAY, "subbuf:" + std::string(buffer));
+						Logger(PURPLE, "Replay Recv read " + std::to_string(ret) + " bytes");
 					}
+
+						Logger(GREEN, "Data is read is " + std::to_string(msg.size()) + " bytes  ✅ ");
+						Logger(B_GRAY, msg);
 
 				}
 
-
 			}
-
-
 
 
 		}
-
-		
-
 	}
+}
 
-	/* Destructor */
-	ServerPoll::~ServerPoll()
-	{
-		Logger(RED, "Call ServerPoll Destructor ❌ ");
+/* Destructor */
+ServerPoll::~ServerPoll()
+{
+	Logger(RED, "Call ServerPoll Destructor ❌ ");
 
-		
-	}
+	
+}
 
 	// /* Start */
 	// int ServerPoll::WaitEvent(int &client_fd)
@@ -307,5 +298,3 @@
 	// {
 	// 	Logger(RED, "Call ServerPoll Destructor ❌ ");
 	// }
-
-#endif
