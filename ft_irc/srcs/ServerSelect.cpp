@@ -45,6 +45,10 @@ ServerSelect::ServerSelect(const char *ipaddr, int port)
 
 
 
+
+
+
+
 /* 
 ** Simple Use
 */
@@ -111,7 +115,7 @@ void ServerSelect::Start()
 				rc = recv(i, buffer, sizeof(buffer), 0);
 				if (rc == 0)
 				{
-					Logger(RED, std::to_string(i) + " Connection close");
+					Logger(RED, std::to_string(i) + " Connection close ❌");
 					close(i);
 					FD_CLR(i, &_currfds);
 					return;
