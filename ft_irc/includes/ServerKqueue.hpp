@@ -1,6 +1,6 @@
 #ifndef SERVER_KQUEUE
 # define SERVER_KQUEUE
-
+#ifdef __APPLE__
 
 /* Abstract Class  */
 #include "ServerApi.hpp"
@@ -61,4 +61,5 @@ class ServerKqueue: public AbstractServerApi
 		//void	RemoveFd(int client_fd);
 };
 
+#endif
 #endif

@@ -6,7 +6,7 @@
 /*   By: ifanzilka <ifanzilka@student.42.fr>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/04/14 00:49:56 by bmarilli          #+#    #+#             */
-/*   Updated: 2022/07/20 20:39:15 by ifanzilka        ###   ########.fr       */
+/*   Updated: 2022/07/22 01:56:08 by ifanzilka        ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,6 +29,9 @@
 #include <ctime>		/* time */
 #include <map>			/* map */
 #include <vector>		/* vector */
+
+#include <strings.h>	/* bzero */
+#include <string.h>		/* strerror */
 
 #define SERVER_PROTOCOL 	AF_INET 	//IpV4
 #define	SERVER_TYPE			SOCK_STREAM //TCP
