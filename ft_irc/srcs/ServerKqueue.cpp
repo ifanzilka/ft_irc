@@ -43,6 +43,8 @@
 		/* Добавляю событие прослушки fd сервера */
 		/* Задаем события для отслеживания */
 		/* EV_SET() — это макрос, предназначенный для упрощения инициализации структуры kevent . */
+		/* EVFILT_READ - cобытия , EV_ADD | EV_ENABLE - фильтры его */
+		/* Грубо говоря настриваю сокет сервера на прослушивание */
 		EV_SET(&_evSet, _server_fd, EVFILT_READ, EV_ADD | EV_ENABLE , 0, 0, NULL);
 
 
@@ -70,6 +72,7 @@
 	{
 		struct kevent kv;
 		
+		/* EV_ADD -> добавляю в очередь на отслеживание */
 		EV_SET(&kv, fd, EVFILT_READ, EV_ADD, 0 , 0, NULL);
 		if (kevent(_kq_fd, &kv, 1, NULL, 0, NULL) == -1)
 			ServerError("kevent add");
@@ -80,6 +83,7 @@
 	{
 		struct kevent kv;
 		
+		/* EV_DISABLE -> удаляю дескриптор из очереди отслеживания */
 		EV_SET(&kv, fd, EVFILT_READ, EV_DISABLE, 0 , 0, NULL);
 		if (kevent(_kq_fd, &kv, 1, NULL, 0, NULL) == -1)
 			ServerError("kevent remove");
