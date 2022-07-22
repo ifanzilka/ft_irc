@@ -65,6 +65,28 @@
 	**	Simple Use
 	*/
 
+
+	void 	ServerKqueue::kqueue_add(int fd)
+	{
+		struct kevent kv;
+		
+		EV_SET(&kv, fd, EVFILT_READ, EV_ADD, 0 , 0, NULL);
+		if (kevent(_kq_fd, &kv, 1, NULL, 0, NULL) == -1)
+			ServerError("kevent add");
+
+	}
+
+	void 	ServerKqueue::kqueue_remove(int fd)
+	{
+		struct kevent kv;
+		
+		EV_SET(&kv, fd, EVFILT_READ, EV_DISABLE, 0 , 0, NULL);
+		if (kevent(_kq_fd, &kv, 1, NULL, 0, NULL) == -1)
+			ServerError("kevent remove");
+		
+	}
+
+
 	void 	ServerKqueue::Start()
 	{
 		Logger(BLUE, "Wait kevent...");
@@ -87,31 +109,15 @@
 			// descriptor the event is automatically removed from the kqueue.
 			if (_evList[i].flags & EV_EOF)
 			{
-				//TODO: std::to_string - 11CPP
-				Logger(RED, "Disconnect fd(" + std::to_string(client_fd) + ") ❌ ");
-
-
-				struct kevent kv;
-				EV_SET(&kv, client_fd, EVFILT_READ, EV_DISABLE, 0 , 0, NULL);
-				if (kevent(_kq_fd, &kv, 1, NULL, 0, NULL) == -1)
-					std::cerr << "kevent() disableReadEvent error" << std::endl;
-
-				//RemoveFd(client_fd);
-				//event_flag = EV_EOF;
+				Logger(RED, "Disconnect fd(" + std::to_string(client_fd) + ") ❌ ");				
+				kqueue_remove(client_fd);
 			}
 			else if (client_fd == _server_fd)
 			{
 				int new_client_fd;
 				new_client_fd = Accept();
 				Logger(GREEN, "Connect fd(" + std::to_string(new_client_fd) + ") ✅ ");
-
-
-				struct kevent kv;
-				EV_SET(&kv, new_client_fd, EVFILT_READ, EV_ADD, 0 , 0, NULL);
-
-				if (kevent(_kq_fd, &kv, 1, NULL, 0, NULL) == -1)
-					std::cerr << "kevent() addReadEvent error" << std::endl;
-
+				kqueue_add(new_client_fd);
 			}
 			else if (_evList[i].filter == EVFILT_READ)
 			{

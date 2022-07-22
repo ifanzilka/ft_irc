@@ -35,6 +35,10 @@ class ServerPoll: public AbstractServerApi
 		/* Init Serv */
 		void 	Init_Serv();
 
+		/* Help Function */
+		void 	poll_add(int fd, short events);
+		void 	poll_remove(int fd);
+
 		// void 	AddFd(int fd);
 		// void	RemoveFd(int client_fd);
 };

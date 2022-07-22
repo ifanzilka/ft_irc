@@ -53,6 +53,19 @@ ServerSelect::ServerSelect(const char *ipaddr, int port)
 ** Simple Use
 */
 
+
+void 	ServerSelect::select_add(int fd)
+{
+	FD_SET(fd, &_currfds);
+	_max_fd = fd > _max_fd ? fd : _max_fd;
+}
+
+void 	ServerSelect::select_remove(int fd)
+{
+	close(fd);
+	FD_CLR(fd, &_currfds);
+}
+
 void ServerSelect::Start()
 {
 	struct timeval 	time;
@@ -91,8 +104,7 @@ void ServerSelect::Start()
 			if (client_fd > 0)
 			{
 				AbstractServerApi::SetNonBlockingFd(client_fd);
-				FD_SET(client_fd, &_currfds);
-				_max_fd = client_fd > _max_fd ? client_fd : _max_fd;
+				select_add(client_fd);
 
 				//Good
 				//add in new client
@@ -111,8 +123,7 @@ void ServerSelect::Start()
 				if (res_read == 0)
 				{
 					Logger(RED, std::to_string(i) + " Connection close ❌");
-					close(i);
-					FD_CLR(i, &_currfds);
+					select_remove(i);
 					return;
 				}
 			}

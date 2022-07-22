@@ -38,6 +38,10 @@ class ServerSelect: public AbstractServerApi
 		fd_set 				_readfds;
 
 		void 	Init_Serv();
+
+		/* Help Function */
+		void 	select_add(int fd);
+		void 	select_remove(int fd);
 };
 
 #endif

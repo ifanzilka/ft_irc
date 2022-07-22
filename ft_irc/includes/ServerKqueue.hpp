@@ -42,6 +42,10 @@ class ServerKqueue: public AbstractServerApi
 		/* Init */
 		void 	Init_Serv();
 
+		/* Help Function */
+		void 	kqueue_add(int fd);
+		void 	kqueue_remove(int fd);
+
 
 		//void			addWriteEvent(int socket, void *udata);
 		//void			addReadEvent(int socket, void *udata);

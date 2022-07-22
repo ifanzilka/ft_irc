@@ -40,6 +40,22 @@ void ServerPoll::Init_Serv()
 ** Simple Use
 */
 
+/* Help Function */
+void 	ServerPoll::poll_add(int fd, short events)
+{
+	struct pollfd fd_client;
+
+	fd_client.fd = fd;
+	fd_client.events = events;	//говорю какие события слушаюй
+	fd_client.revents = 0;
+	_pollfds.push_back(fd_client);
+}
+void 	ServerPoll::poll_remove(int fd)
+{
+
+}
+
+
 void ServerPoll::Start()
 {
 	Logger(BLUE, "Wait Event...");
@@ -75,13 +91,7 @@ void ServerPoll::Start()
 			else
 			{// add fd
 				AbstractServerApi::SetNonBlockingFd(client_fd);
-				struct pollfd fd_client;
-
-				fd_client.fd = client_fd;
-				fd_client.events = POLLIN;	//говорю какие события слушаюй
-				fd_client.revents = 0;
-				_pollfds.push_back(fd_client);
-
+				poll_add(client_fd, POLLIN);
 			}
 		}
 		else
