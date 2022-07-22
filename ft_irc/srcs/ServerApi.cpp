@@ -155,11 +155,61 @@ int AbstractServerApi::ReadInFd(int fd)
 			Logger(GREEN, "Data is read is " + std::to_string(msg.size()) + " bytes  ✅ ");
 			Logger(B_GRAY, msg);
 
-			send(fd, "Message Sucsefull", 17, 0);
+			AbstractServerApi::SendInFd(fd, "Message Sucsefull", 17);
+			//send(fd, "Message Sucsefull", 17, 0);
 	}
 	return (1);
 }
 
+int AbstractServerApi::SendInFd(int fd, std::string &msg)
+{
+	char 	*c_msg = (char *)(const char *)msg.c_str();
+	int 	res_send;
+	
+	size_t 	sended = 0;
+	size_t 	len_msg = msg.size();
+	size_t  BUFFER_LEN = BUFFER_SIZE_SEND > len_msg ? len_msg : BUFFER_SIZE_SEND;
+
+
+	while (sended < len_msg)
+	{
+		res_send = send(fd, c_msg, BUFFER_LEN , 0);
+
+		if (res_send == -1)
+			ServerError("Send");
+
+		sended += res_send;
+		c_msg += res_send;
+
+	}
+	return (0);
+}
+
+int AbstractServerApi::SendInFd(int fd, const char *msg, size_t size)
+{
+	char 	*c_msg = (char *)(const char *)msg;
+	int 	res_send;
+	
+	size_t 	sended = 0;
+	size_t 	len_msg = size;
+	size_t  BUFFER_LEN = BUFFER_LEN > size ? size : BUFFER_SIZE_SEND;
+	
+	while (sended < len_msg)
+	{
+		res_send = send(fd, c_msg, BUFFER_LEN , 0);
+
+		if (res_send == -1)
+		{
+			ServerError("Send");
+			return (-1);
+		}
+
+		sended += res_send;
+		c_msg += res_send;
+
+	}
+	return (0);
+}
 
 /*
 ** Getters

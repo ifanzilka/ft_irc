@@ -6,7 +6,7 @@
 /*   By: ifanzilka <ifanzilka@student.42.fr>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/04/14 00:49:56 by bmarilli          #+#    #+#             */
-/*   Updated: 2022/07/22 07:30:02 by ifanzilka        ###   ########.fr       */
+/*   Updated: 2022/07/22 16:17:45 by ifanzilka        ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -36,7 +36,7 @@
 #define SERVER_PROTOCOL 	AF_INET 	//IpV4
 #define	SERVER_TYPE			SOCK_STREAM //TCP
 #define MAX_CONNECT_LISTEN 	15			//In Listen
-#define	BUFFER_SIZE_SEND	2			//
+#define	BUFFER_SIZE_SEND	2		//Send
 #define RECV_BUFFER_SIZE	3			//Read
 
 #define LOGGER_ENABLE		1			//1 - ON, 0 - OFF
@@ -103,9 +103,9 @@ class AbstractServerApi
 		virtual int 		Listen();
 		virtual	int 		Accept();
 		virtual	int 		ReadInFd(int fd);
+		virtual	int 		SendInFd(int fd, std::string &msg);
+		virtual	int			SendInFd(int fd, const char *msg, size_t size);
 
-
-		
 
 		/* Print Errno */
 		virtual	void	ServerError(const char *s);
