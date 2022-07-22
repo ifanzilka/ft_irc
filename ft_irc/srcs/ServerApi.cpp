@@ -192,7 +192,8 @@ int AbstractServerApi::SendInFd(int fd, const char *msg, size_t size)
 	
 	size_t 	sended = 0;
 	size_t 	len_msg = size;
-	size_t  BUFFER_LEN = BUFFER_LEN > size ? size : BUFFER_SIZE_SEND;
+	size_t  BUFFER_LEN = BUFFER_SIZE_SEND > size ? size : BUFFER_SIZE_SEND;
+
 	
 	while (sended < len_msg)
 	{

@@ -6,7 +6,7 @@
 #    By: ifanzilka <ifanzilka@student.42.fr>        +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2022/07/17 21:11:43 by ifanzilka         #+#    #+#              #
-#    Updated: 2022/07/22 04:40:58 by ifanzilka        ###   ########.fr        #
+#    Updated: 2022/07/22 21:04:37 by ifanzilka        ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -18,7 +18,7 @@
 CXX = clang++
 
 #Compilation flag
-CPPFLAGS = #-Wall -Wextra -Werror -std=c++98
+CPPFLAGS = -Wall -Wextra -Werror #-std=c++98
 
 INCLUDES = includes
 
@@ -77,8 +77,8 @@ epoll:
 
 code:
 	@echo " ~~~~~~~~~~~~~~~~"
-	@echo "$(IGREY)  * Make code, *"
-	@echo "$(IGREY)   * not war! *"
+	@echo "$(WHITE)  * Make code, *"
+	@echo "$(WHITE)   * not war! *"
 	@echo "$(RED)    ..10101.."
 	@echo "$(YELLOW)  01    1   01"
 	@echo "$(VIOLET) 10     0     00"

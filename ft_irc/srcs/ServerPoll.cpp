@@ -52,7 +52,7 @@ void 	ServerPoll::poll_add(int fd, short events)
 }
 void 	ServerPoll::poll_remove(int fd)
 {
-
+	(void)fd;
 }
 
 
