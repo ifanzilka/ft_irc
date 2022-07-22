@@ -109,8 +109,10 @@ int	AbstractServerApi::Accept()
 		return (-1);
 	}
 	inet_ntop(SERVER_PROTOCOL, (char *)&(clientaddr.sin_addr), buf, sizeof(clientaddr));
+	
 	Logger(GREEN, "New connection as fd:(" + std::to_string(client_fd) + ") ✅ ");
 	Logger(GREEN, "New connection as address: (" + std::string(buf) + ") ✅ ");
+	Logger(GREEN, "New connection as port:(" + std::to_string(clientaddr.sin_port) + ") ✅ ");
 	return (client_fd);
 }
 
@@ -155,7 +157,7 @@ int AbstractServerApi::ReadInFd(int fd)
 			Logger(GREEN, "Data is read is " + std::to_string(msg.size()) + " bytes  ✅ ");
 			Logger(B_GRAY, msg);
 
-			AbstractServerApi::SendInFd(fd, "Message Sucsefull", 17);
+			AbstractServerApi::SendInFd(fd, "Message Sucsefull\n", 18);
 			//send(fd, "Message Sucsefull", 17, 0);
 	}
 	return (1);

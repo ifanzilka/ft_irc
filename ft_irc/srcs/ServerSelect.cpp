@@ -105,10 +105,6 @@ void ServerSelect::Start()
 			{
 				AbstractServerApi::SetNonBlockingFd(client_fd);
 				select_add(client_fd);
-
-				//Good
-				//add in new client
-				//Logger(GREEN, "Add new Connection in fd: " + std::to_string(client_fd));	
 			}
 			return;
 		}
