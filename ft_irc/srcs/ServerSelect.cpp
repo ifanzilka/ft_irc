@@ -90,6 +90,7 @@ void ServerSelect::Start()
 			client_fd = AbstractServerApi::Accept();
 			if (client_fd > 0)
 			{
+				AbstractServerApi::SetNonBlockingFd(client_fd);
 				FD_SET(client_fd, &_currfds);
 				_max_fd = client_fd > _max_fd ? client_fd : _max_fd;
 
@@ -106,28 +107,15 @@ void ServerSelect::Start()
 			if (FD_ISSET(i, &_readfds))
 			{
 
-				Logger(PURPLE, std::to_string(i) + " ready in READ");
-
-				int rc;
-				char buffer[1024];
-
-				bzero(buffer, 1024);
-				rc = recv(i, buffer, sizeof(buffer), 0);
-				if (rc == 0)
+				int res_read = AbstractServerApi::ReadInFd(i);
+				if (res_read == 0)
 				{
 					Logger(RED, std::to_string(i) + " Connection close ❌");
 					close(i);
 					FD_CLR(i, &_currfds);
 					return;
 				}
-				else
-				{
-					Logger(GREEN, std::to_string(i) + " message:\n" + std::string(buffer));
-					send(i, "Message Sucsefull", 17, 0);
-				}
 			}
-			
-
 		}
 	}
 }
@@ -141,12 +129,6 @@ ServerSelect::~ServerSelect()
 {
 	Logger(RED, "Call ServerSelect Destructor❌ ");
 }
-
-
-
-
-
-
 
 
 

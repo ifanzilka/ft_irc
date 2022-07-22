@@ -114,6 +114,52 @@ int	AbstractServerApi::Accept()
 	return (client_fd);
 }
 
+int AbstractServerApi::ReadInFd(int fd)
+{
+	char 		buffer[RECV_BUFFER_SIZE];
+	std::string msg;
+
+	bzero(buffer, RECV_BUFFER_SIZE);
+
+
+	int ret = recv(fd, buffer, RECV_BUFFER_SIZE - 1, 0);
+	if (ret == 0)
+	{
+		/* Api poll*/
+		Logger(RED, "Disconnect fd(" + std::to_string(fd) + ") ❌ ");
+		Logger(B_GRAY, "Remove fd " + std::to_string(fd));
+		//close(it->fd);
+		//_pollfds.erase(it);
+		return (0);
+	}
+	else
+	{
+		msg += buffer;
+
+		Logger(PURPLE, "Recv read " + std::to_string(ret) + " bytes");
+		Logger(B_GRAY, "buff:" + std::string(buffer));
+
+		/* Read */
+		while (ret == RECV_BUFFER_SIZE - 1)
+		{
+			ret = recv(fd, buffer, RECV_BUFFER_SIZE - 1, 0);
+			if (ret == -1)
+				break;
+
+			buffer[ret] = 0;
+			msg += buffer;
+			Logger(B_GRAY, "subbuf:" + std::string(buffer));
+			Logger(PURPLE, "Replay Recv read " + std::to_string(ret));
+		}
+
+			Logger(GREEN, "Data is read is " + std::to_string(msg.size()) + " bytes  ✅ ");
+			Logger(B_GRAY, msg);
+
+			send(fd, "Message Sucsefull", 17, 0);
+	}
+	return (1);
+}
+
 
 /*
 ** Getters
@@ -179,6 +225,16 @@ void AbstractServerApi::PrintSockaddrInfo(struct sockaddr_in *info)
 	msg += std::string(ip4);
 	msg += std::to_string(port);
 	Logger(PURPLE, msg);
+}
+
+int	AbstractServerApi::SetNonBlockingFd(int fd)
+{
+	if (fcntl(fd, F_SETFL, O_NONBLOCK) == -1)
+	{
+		ServerError("SetNonBlockingFd");
+		return (-1);
+	}
+	return 0;
 }
 
 void AbstractServerApi::ServerError(const char *s)

@@ -33,6 +33,9 @@
 			
 			/* Init Serv */
 			void 	Init_Serv();
+
+			/* Help Function */
+			void 	epoll_add(int fd, uint32_t events);
 	};
 
 #endif

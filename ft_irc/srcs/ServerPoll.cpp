@@ -74,7 +74,7 @@ void ServerPoll::Start()
 			}
 			else
 			{// add fd
-
+				AbstractServerApi::SetNonBlockingFd(client_fd);
 				struct pollfd fd_client;
 
 				fd_client.fd = client_fd;
@@ -108,48 +108,16 @@ void ServerPoll::Start()
 
 			if (fd_read != 0)
 			{
-				char buffer[RECV_BUFFER_SIZE];
-				bzero(buffer, RECV_BUFFER_SIZE);
-
-				int ret = recv(fd_read, buffer, RECV_BUFFER_SIZE - 1, 0);
-				if (ret == 0)
+				int res_read = AbstractServerApi::ReadInFd(fd_read);
+				
+				if (res_read == 0)
 				{
 					Logger(RED, "Disconnect fd(" + std::to_string(fd_read) + ") ❌ ");
 					Logger(B_GRAY, "Remove fd " + std::to_string(fd_read));
 					close(it->fd);
 					_pollfds.erase(it);
-
 				}
-				else
-				{
-					//_client_rqst_msg.resize(0);
-					//client_rqst_msg += buffer;
-					std::string msg;
-
-					msg += buffer;
-
-					Logger(PURPLE, "Recv read " + std::to_string(ret) + " bytes");
-					Logger(B_GRAY, "buff:" + std::string(buffer));
-
-					while (ret == RECV_BUFFER_SIZE - 1)
-					{
-						ret = recv(client_fd, buffer, RECV_BUFFER_SIZE - 1, 0);
-						if (ret == -1)
-							break;
-
-						buffer[ret] = 0;
-						msg += buffer;
-						Logger(B_GRAY, "subbuf:" + std::string(buffer));
-						Logger(PURPLE, "Replay Recv read " + std::to_string(ret) + " bytes");
-					}
-
-						Logger(GREEN, "Data is read is " + std::to_string(msg.size()) + " bytes  ✅ ");
-						Logger(B_GRAY, msg);
-
-				}
-
 			}
-
 
 		}
 	}

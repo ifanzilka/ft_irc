@@ -6,7 +6,7 @@
 /*   By: ifanzilka <ifanzilka@student.42.fr>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/04/14 00:49:56 by bmarilli          #+#    #+#             */
-/*   Updated: 2022/07/22 01:56:08 by ifanzilka        ###   ########.fr       */
+/*   Updated: 2022/07/22 07:30:02 by ifanzilka        ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -37,7 +37,7 @@
 #define	SERVER_TYPE			SOCK_STREAM //TCP
 #define MAX_CONNECT_LISTEN 	15			//In Listen
 #define	BUFFER_SIZE_SEND	2			//
-#define RECV_BUFFER_SIZE	2			//Read
+#define RECV_BUFFER_SIZE	3			//Read
 
 #define LOGGER_ENABLE		1			//1 - ON, 0 - OFF
 
@@ -81,6 +81,7 @@ class AbstractServerApi
 		std::string			GetHostName();
 		int					GetPort();
 		void				PrintSockaddrInfo(struct sockaddr_in *info);
+		int					SetNonBlockingFd(int fd);
 
 		/* Destructor */
 		virtual				 ~AbstractServerApi();
@@ -101,7 +102,10 @@ class AbstractServerApi
 		virtual int 		Binded();
 		virtual int 		Listen();
 		virtual	int 		Accept();
+		virtual	int 		ReadInFd(int fd);
 
+
+		
 
 		/* Print Errno */
 		virtual	void	ServerError(const char *s);

@@ -47,7 +47,25 @@ ServerEpoll::ServerEpoll(const char *ipaddr, int port)
 }
 
 
+
+
 /* Simple Use */
+
+/* Help function */
+
+void ServerEpoll::epoll_add(int fd, uint32_t events)
+{
+	struct epoll_event ev;
+	
+	ev.events = events;
+	ev.data.fd = fd;
+	
+	if (epoll_ctl(_epfd, EPOLL_CTL_ADD, fd, &ev) == -1)
+	{
+		ServerError("Epoll_ctl add");
+	}
+}
+
 
 void ServerEpoll::Start()
 {
@@ -71,14 +89,9 @@ void ServerEpoll::Start()
 			}
 			else
 			{
-				struct epoll_event ev;
-				ev.events = EPOLLIN | EPOLLET | EPOLLRDHUP | EPOLLHUP;
-				ev.data.fd = client_fd;
-				if (epoll_ctl(_epfd, EPOLL_CTL_ADD, client_fd, &ev) == -1)
-				{
-					ServerError("Epoll epoll_ctl add new fd");
-				}
-
+				AbstractServerApi::SetNonBlockingFd(client_fd);
+				epoll_add(client_fd,  EPOLLIN | EPOLLET | EPOLLRDHUP | EPOLLHUP);
+				
 			}
 			
 		} 
@@ -86,14 +99,15 @@ void ServerEpoll::Start()
 		{
 			/* handle EPOLLIN event */
 			//printf("POLLIN");
-			int rc;
-			char buffer[1024];
+			//int rc;
+			//char buffer[1024];
 
-			bzero(buffer, 1024);
-			size_t bytes_rea = recv(_events[i].data.fd, buffer, sizeof(buffer), 0);
-			printf("read %zu bytes\n", bytes_rea);
-			Logger(GREEN, std::to_string(_events[i].data.fd) + " message:\n" + std::string(buffer));
-			send(_events[i].data.fd, "Message Sucsefull", 17, 0);
+			//bzero(buffer, 1024);
+			//size_t bytes_rea = recv(_events[i].data.fd, buffer, sizeof(buffer), 0);
+			//printf("read %zu bytes\n", bytes_rea);
+			//Logger(GREEN, std::to_string(_events[i].data.fd) + " message:\n" + std::string(buffer));
+			//send(_events[i].data.fd, "Message Sucsefull", 17, 0);
+			AbstractServerApi::ReadInFd(_events[i].data.fd);
 
 		} 
 		else
@@ -117,7 +131,6 @@ ServerEpoll::~ServerEpoll()
 	close(_epfd);
 	Logger(RED, "Call ServerEpoll Destructor ❌ ");
 }
-
 
 
 #endif
