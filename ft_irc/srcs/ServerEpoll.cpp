@@ -19,6 +19,7 @@ void ServerEpoll::Init_Serv()
 		ServerError("Epoll_create");
 	
 	/*  Добавляю fd в очередь epfd чтобы мог отслеживать его события*/
+	/* То есть начинаю прослушивать fd сервера */
 	res = epoll_ctl(_epfd, EPOLL_CTL_ADD, _server_fd, &event);
 	if (res == -1)
 		ServerError("Epoll Init epoll_ctl");
@@ -53,7 +54,7 @@ ServerEpoll::ServerEpoll(const char *ipaddr, int port)
 
 /* Help function */
 
-void ServerEpoll::epoll_add(int fd, uint32_t events)
+void	ServerEpoll::epoll_add(int fd, uint32_t events)
 {
 	struct epoll_event ev;
 	
@@ -66,6 +67,11 @@ void ServerEpoll::epoll_add(int fd, uint32_t events)
 	}
 }
 
+void 	ServerEpoll::epoll_remove(int fd)
+{
+	close(fd);
+	epoll_ctl(_epfd, EPOLL_CTL_DEL, fd, NULL);
+}
 
 void ServerEpoll::Start()
 {
@@ -98,15 +104,7 @@ void ServerEpoll::Start()
 		else if (_events[i].events & EPOLLIN)
 		{
 			/* handle EPOLLIN event */
-			//printf("POLLIN");
-			//int rc;
-			//char buffer[1024];
-
-			//bzero(buffer, 1024);
-			//size_t bytes_rea = recv(_events[i].data.fd, buffer, sizeof(buffer), 0);
-			//printf("read %zu bytes\n", bytes_rea);
-			//Logger(GREEN, std::to_string(_events[i].data.fd) + " message:\n" + std::string(buffer));
-			//send(_events[i].data.fd, "Message Sucsefull", 17, 0);
+	
 			AbstractServerApi::ReadInFd(_events[i].data.fd);
 
 		} 
@@ -118,8 +116,7 @@ void ServerEpoll::Start()
 		if (_events[i].events & (EPOLLRDHUP | EPOLLHUP))
 		{
 				Logger(RED, std::to_string(_events[i].data.fd) + " Connection close ❌");
-				epoll_ctl(_epfd, EPOLL_CTL_DEL, _events[i].data.fd, NULL);
-				close(_events[i].data.fd);
+				epoll_remove(_events[i].data.fd);
 				continue;
 		}
 	}

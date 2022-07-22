@@ -36,6 +36,7 @@
 
 			/* Help Function */
 			void 	epoll_add(int fd, uint32_t events);
+			void 	epoll_remove(int fd);
 	};
 
 #endif
