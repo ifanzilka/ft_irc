@@ -6,7 +6,7 @@
 #    By: ifanzilka <ifanzilka@student.42.fr>        +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2022/07/17 21:11:43 by ifanzilka         #+#    #+#              #
-#    Updated: 2022/07/21 00:28:01 by ifanzilka        ###   ########.fr        #
+#    Updated: 2022/07/22 04:40:58 by ifanzilka        ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -27,6 +27,8 @@ SRCS = srcs/ServerApi.cpp
 SELECT_SRCS = srcs/ServerSelect.cpp
 
 POLL_SRCS = srcs/ServerPoll.cpp
+
+EPOLL_SRCS = srcs/ServerEpoll.cpp
 
 KQUEUE_SRCS = srcs/ServerKqueue.cpp
 
@@ -70,6 +72,8 @@ poll:
 kqueue:
 	$(CXX) $(CPPFLAGS) -I$(INCLUDES) $(SRCS) $(KQUEUE_SRCS) $(MAIN_TEST)
 
+epoll:
+	$(CXX) $(CPPFLAGS) -I$(INCLUDES) $(SRCS) $(EPOLL_SRCS) $(MAIN_TEST)
 
 code:
 	@echo " ~~~~~~~~~~~~~~~~"

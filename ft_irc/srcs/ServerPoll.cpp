@@ -29,7 +29,7 @@ void ServerPoll::Init_Serv()
 	struct pollfd fd_serv;
 
 	fd_serv.fd = _server_fd;
-	fd_serv.events = POLLIN;
+	fd_serv.events = POLLIN;	/* Какие события отслеживаю (входящие)*/
 	fd_serv.revents = 0;
 
 	_pollfds.push_back(fd_serv);
@@ -47,6 +47,7 @@ void ServerPoll::Start()
 	int result;
 	int timeout = -1;
 
+	/* Массив дискрипторов и размер его*/
 	result = poll(& _pollfds[0], _pollfds.size(), timeout);
 	Logger(B_GRAY, "Poll return " + std::to_string(result));
 	

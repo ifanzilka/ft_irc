@@ -98,6 +98,7 @@ int	AbstractServerApi::Accept()
 	struct sockaddr_in	clientaddr;
 	socklen_t 			len;
 	int 				client_fd;
+	char 				buf[1024];
 
 	// Incoming socket connection on the listening socket.
 	// Create a new socket for the actual connection to client.
@@ -107,8 +108,9 @@ int	AbstractServerApi::Accept()
 		ServerError("Accept");
 		return (-1);
 	}
-
+	inet_ntop(SERVER_PROTOCOL, (char *)&(clientaddr.sin_addr), buf, sizeof(clientaddr));
 	Logger(GREEN, "New connection as fd:(" + std::to_string(client_fd) + ") ✅ ");
+	Logger(GREEN, "New connection as address: (" + std::string(buf) + ") ✅ ");
 	return (client_fd);
 }
 
