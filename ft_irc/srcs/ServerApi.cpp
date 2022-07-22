@@ -130,8 +130,6 @@ int AbstractServerApi::ReadInFd(int fd)
 		/* Api poll*/
 		Logger(RED, "Disconnect fd(" + std::to_string(fd) + ") ❌ ");
 		Logger(B_GRAY, "Remove fd " + std::to_string(fd));
-		//close(it->fd);
-		//_pollfds.erase(it);
 		return (0);
 	}
 	else

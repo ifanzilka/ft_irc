@@ -6,7 +6,7 @@
 /*   By: ifanzilka <ifanzilka@student.42.fr>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/04/14 00:49:56 by bmarilli          #+#    #+#             */
-/*   Updated: 2022/07/22 16:17:45 by ifanzilka        ###   ########.fr       */
+/*   Updated: 2022/07/22 23:34:03 by ifanzilka        ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -44,10 +44,11 @@
 class Client
 {
 	public:
-		Client(int fd_client, sockaddr_in 	addrinfo_client)
+		Client(int fd_client, sockaddr_in 	addrinfo_client, std::string server_ipaddr)
 		{
 			_fd = fd_client;
 			_addrinfo = addrinfo_client;
+			_server_ipaddr = server_ipaddr;
 		};
 
 		int getFd() const
@@ -63,6 +64,7 @@ class Client
 	private:
 		struct sockaddr_in 	_addrinfo;
 		int					_fd;
+		std::string			_server_ipaddr;
 		std::string			_name;
 };
 
