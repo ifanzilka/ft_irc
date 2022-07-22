@@ -115,15 +115,8 @@
 			}
 			else if (_evList[i].filter == EVFILT_READ)
 			{
+				AbstractServerApi::ReadInFd(client_fd);
 				//event_flag = EVFILT_READ;
-				int rc;
-				char buffer[1024];
-
-				bzero(buffer, 1024);
-				size_t bytes_rea = recv(client_fd, buffer, sizeof(buffer), 0);
-				printf("read %zu bytes\n", bytes_rea);
-				Logger(GREEN, std::to_string(i) + " message:\n" + std::string(buffer));
-
 			}
 			else if (_evList[i].filter == EVFILT_WRITE)
 			{
