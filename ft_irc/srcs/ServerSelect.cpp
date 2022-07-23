@@ -114,14 +114,18 @@ void ServerSelect::Start()
 
 			if (FD_ISSET(i, &_readfds))
 			{
-
+				
 				int res_read = AbstractServerApi::ReadInFd(i);
+				
 				if (res_read == 0)
 				{
+					
 					Logger(RED, std::to_string(i) + " Connection close ❌");
+					RemoveClient(i);
 					select_remove(i);
 					return;
 				}
+				
 			}
 		}
 	}

@@ -6,7 +6,7 @@
 /*   By: ifanzilka <ifanzilka@student.42.fr>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/04/14 00:49:56 by bmarilli          #+#    #+#             */
-/*   Updated: 2022/07/22 23:34:03 by ifanzilka        ###   ########.fr       */
+/*   Updated: 2022/07/23 20:43:32 by ifanzilka        ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,6 +29,7 @@
 #include <ctime>		/* time */
 #include <map>			/* map */
 #include <vector>		/* vector */
+#include <set>			/* set	*/
 
 #include <strings.h>	/* bzero */
 #include <string.h>		/* strerror */
@@ -44,6 +45,8 @@
 class Client
 {
 	public:
+
+		/* Constructor */
 		Client(int fd_client, sockaddr_in 	addrinfo_client, std::string server_ipaddr)
 		{
 			_fd = fd_client;
@@ -65,7 +68,6 @@ class Client
 		struct sockaddr_in 	_addrinfo;
 		int					_fd;
 		std::string			_server_ipaddr;
-		std::string			_name;
 };
 
 class AbstractServerApi
@@ -112,6 +114,16 @@ class AbstractServerApi
 		/* Print Errno */
 		virtual	void	ServerError(const char *s);
 		void			Logger(std::string color,std::string msg);
+	
+
+		/* Clients */
+		std::vector<Client*> _Clients;
+
+		/* Add new  Client */
+		void 	AddClient(int fd_client, sockaddr_in 	addrinfo_client, std::string server_ipaddr);
+		
+		/* Remove */
+		void 	RemoveClient(int fd_client);
 
 };
 

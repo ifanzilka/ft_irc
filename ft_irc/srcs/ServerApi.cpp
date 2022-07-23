@@ -108,6 +108,8 @@ int	AbstractServerApi::Accept()
 		ServerError("Accept");
 		return (-1);
 	}
+	AddClient(client_fd, clientaddr, _ipaddr);
+
 	inet_ntop(SERVER_PROTOCOL, (char *)&(clientaddr.sin_addr), buf, sizeof(clientaddr));
 	
 	Logger(GREEN, "New connection as fd:(" + std::to_string(client_fd) + ") ✅ ");
@@ -136,8 +138,8 @@ int AbstractServerApi::ReadInFd(int fd)
 	{
 		msg += buffer;
 
-		Logger(PURPLE, "Recv read " + std::to_string(ret) + " bytes");
-		Logger(B_GRAY, "buff:" + std::string(buffer));
+		//Logger(PURPLE, "Recv read " + std::to_string(ret) + " bytes");
+		//Logger(B_GRAY, "buff:" + std::string(buffer));
 
 		/* Read */
 		while (ret == RECV_BUFFER_SIZE - 1)
@@ -148,14 +150,15 @@ int AbstractServerApi::ReadInFd(int fd)
 
 			buffer[ret] = 0;
 			msg += buffer;
-			Logger(B_GRAY, "subbuf:" + std::string(buffer));
-			Logger(PURPLE, "Replay Recv read " + std::to_string(ret));
+			//Logger(B_GRAY, "subbuf:" + std::string(buffer));
+			//Logger(PURPLE, "Replay Recv read " + std::to_string(ret));
 		}
 
 			Logger(GREEN, "Data is read is " + std::to_string(msg.size()) + " bytes  ✅ ");
 			Logger(B_GRAY, msg);
+			
+			//AbstractServerApi::SendInFd(fd, "Message Sucsefull\n", 18);
 
-			AbstractServerApi::SendInFd(fd, "Message Sucsefull\n", 18);
 			//send(fd, "Message Sucsefull", 17, 0);
 	}
 	return (1);
@@ -197,8 +200,9 @@ int AbstractServerApi::SendInFd(int fd, const char *msg, size_t size)
 	
 	while (sended < len_msg)
 	{
+		std::cout << "send send start\n";
 		res_send = send(fd, c_msg, BUFFER_LEN , 0);
-
+		std::cout << "send send end\n";
 		if (res_send == -1)
 		{
 			ServerError("Send");
@@ -211,6 +215,43 @@ int AbstractServerApi::SendInFd(int fd, const char *msg, size_t size)
 	}
 	return (0);
 }
+
+
+/* Clients */
+
+
+/* Add */
+void 	AbstractServerApi::AddClient(int fd_client, sockaddr_in addrinfo_client, std::string server_ipaddr)
+{
+	//Client   new_client(int fd_client, sockaddr_in addrinfo_client, std::string server_ipaddr);
+	Client   *new_client = new Client (fd_client, addrinfo_client, server_ipaddr);
+
+
+	_Clients.push_back(new_client);
+
+}
+
+/* Remove */
+void 	AbstractServerApi::RemoveClient(int fd_client)
+{
+	std::vector<Client*>::iterator it = _Clients.begin();
+	std::vector<Client*>::iterator it_end = _Clients.end();
+
+
+	while (it < it_end)
+	{
+		if ((*it)->getFd() == fd_client)
+		{
+			delete *it;
+			_Clients.erase(it);
+			break;
+		}
+
+		it++;
+	}
+}
+
+
 
 /*
 ** Getters
@@ -305,7 +346,7 @@ void AbstractServerApi::ServerError(const char *s)
 	Logger(RED, full);
 	std::cerr << RED << full << NORM << "\n";
 	//throw std::runtime_error(full);
-	exit(42);
+	//exit(42);
 }
 
 
