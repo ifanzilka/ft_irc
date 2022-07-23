@@ -115,6 +115,7 @@
 			{
 				Logger(RED, "Disconnect fd(" + std::to_string(client_fd) + ") ❌ ");				
 				kqueue_remove(client_fd);
+				RemoveClient(client_fd);
 			}
 			else if (client_fd == _server_fd)
 			{

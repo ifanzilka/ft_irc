@@ -124,6 +124,8 @@ void ServerPoll::Start()
 				{
 					Logger(RED, "Disconnect fd(" + std::to_string(fd_read) + ") ❌ ");
 					Logger(B_GRAY, "Remove fd " + std::to_string(fd_read));
+					
+					RemoveClient(it->fd);
 					close(it->fd);
 					_pollfds.erase(it);
 				}

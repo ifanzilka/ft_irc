@@ -6,7 +6,7 @@
 /*   By: ifanzilka <ifanzilka@student.42.fr>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/04/14 00:49:56 by bmarilli          #+#    #+#             */
-/*   Updated: 2022/07/23 20:43:32 by ifanzilka        ###   ########.fr       */
+/*   Updated: 2022/07/23 21:29:32 by ifanzilka        ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -86,6 +86,9 @@ class AbstractServerApi
 		int					GetPort();
 		void				PrintSockaddrInfo(struct sockaddr_in *info);
 		int					SetNonBlockingFd(int fd);
+
+		/* Main Functional */
+		//virtual void 				Run() = 0;
 
 		/* Destructor */
 		virtual				 ~AbstractServerApi();

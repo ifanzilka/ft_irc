@@ -26,6 +26,10 @@ class ServerSelect: public AbstractServerApi
 		//virtual void 		CheckWrite();
 		//virtual	int			ReadFd(int clinet_fd);
 
+
+		/* Main functional */
+		//void 		Run();
+
 		/* Destructor */
 		virtual ~ServerSelect();
 
