@@ -18,7 +18,13 @@ class ServerSelect: public AbstractServerApi
 		ServerSelect(int port);
 		ServerSelect(std::string &ipaddr, int port);
 		ServerSelect(const char *ipaddr, int port);
+		
+		/* Simple USE */
 		void Start();
+
+		/* USE */
+		//void Run();
+
 		/* Events */
 		//virtual	int			WaitEvent(int &client_fd);
 		//virtual	int			CheckAccept();

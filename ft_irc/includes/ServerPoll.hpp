@@ -38,6 +38,8 @@ class ServerPoll: public AbstractServerApi
 		/* Help Function */
 		void 	poll_add(int fd, short events);
 		void 	poll_remove(int fd);
+		int 	check_disconnect(int fd);
+
 
 		// void 	AddFd(int fd);
 		// void	RemoveFd(int client_fd);

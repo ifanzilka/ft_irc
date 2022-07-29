@@ -6,7 +6,7 @@
 /*   By: ifanzilka <ifanzilka@student.42.fr>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/04/14 00:49:56 by bmarilli          #+#    #+#             */
-/*   Updated: 2022/07/23 21:29:32 by ifanzilka        ###   ########.fr       */
+/*   Updated: 2022/07/29 04:59:59 by ifanzilka        ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -101,6 +101,10 @@ class AbstractServerApi
 		int 				_port;
 		int 				_server_fd;
 		int					_fd_log_file;
+
+
+		/* MSG in READ */
+		std::string 		_msg;
 
 	
 		/* Говорю что можно переопределить */

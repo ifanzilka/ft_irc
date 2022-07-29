@@ -121,10 +121,8 @@ int	AbstractServerApi::Accept()
 int AbstractServerApi::ReadInFd(int fd)
 {
 	char 		buffer[RECV_BUFFER_SIZE];
-	std::string msg;
 
 	bzero(buffer, RECV_BUFFER_SIZE);
-
 
 	int ret = recv(fd, buffer, RECV_BUFFER_SIZE - 1, 0);
 	if (ret == 0)
@@ -136,7 +134,7 @@ int AbstractServerApi::ReadInFd(int fd)
 	}
 	else
 	{
-		msg += buffer;
+		_msg += buffer;
 
 		//Logger(PURPLE, "Recv read " + std::to_string(ret) + " bytes");
 		//Logger(B_GRAY, "buff:" + std::string(buffer));
@@ -149,16 +147,19 @@ int AbstractServerApi::ReadInFd(int fd)
 				break;
 
 			buffer[ret] = 0;
-			msg += buffer;
+			_msg += buffer;
 			//Logger(B_GRAY, "subbuf:" + std::string(buffer));
 			//Logger(PURPLE, "Replay Recv read " + std::to_string(ret));
 		}
 
-			Logger(GREEN, "Data is read is " + std::to_string(msg.size()) + " bytes  ✅ ");
-			Logger(B_GRAY, msg);
+			Logger(GREEN, "Data is read is " + std::to_string(_msg.size()) + " bytes  ✅ ");
+			Logger(B_GRAY, _msg);
+			
+			_msg = "";
+			//USER Adium * 127.0.0.1 :Пользователь Adium
+			//NICK ifanzilka
 			
 			//AbstractServerApi::SendInFd(fd, "Message Sucsefull\n", 18);
-
 			//send(fd, "Message Sucsefull", 17, 0);
 	}
 	return (1);

@@ -50,9 +50,25 @@ void 	ServerPoll::poll_add(int fd, short events)
 	fd_client.revents = 0;
 	_pollfds.push_back(fd_client);
 }
+
 void 	ServerPoll::poll_remove(int fd)
 {
 	(void)fd;
+}
+
+
+int 	ServerPoll::check_disconnect(int fd)
+{
+	char c;
+	
+	int res = recv(fd, &c, 1, 0);
+
+	if (res == 0)
+	{
+		return (1);
+	}
+	_msg += &c;
+	return (0);
 }
 
 
@@ -118,9 +134,9 @@ void ServerPoll::Start()
 
 			if (fd_read != 0)
 			{
-				int res_read = AbstractServerApi::ReadInFd(fd_read);
+				int check_res = check_disconnect(fd_read);
 				
-				if (res_read == 0)
+				if (check_res == 1)
 				{
 					Logger(RED, "Disconnect fd(" + std::to_string(fd_read) + ") ❌ ");
 					Logger(B_GRAY, "Remove fd " + std::to_string(fd_read));
@@ -128,6 +144,10 @@ void ServerPoll::Start()
 					RemoveClient(it->fd);
 					close(it->fd);
 					_pollfds.erase(it);
+				}
+				else
+				{
+					AbstractServerApi::ReadInFd(fd_read);
 				}
 			}
 

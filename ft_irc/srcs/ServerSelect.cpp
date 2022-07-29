@@ -133,6 +133,29 @@ void ServerSelect::Start()
 
 
 
+// /* Use */
+
+// void ServerSelect::Run()
+// {
+// 	Logger(BLUE, "Run Server select...");
+
+// 	int 			_select;
+
+// 	while (1)
+// 	{
+
+// 		/* Множества приравниваю */
+// 		_writefds = _readfds = _currfds;
+// 		Logger(BLUE, "Wait select...");
+
+// 		/* Останавливаю процесс для отловки событий */
+// 		_select = select(_max_fd + 1, &_readfds, NULL, NULL, NULL);
+// 		Logger(B_GRAY, "Select signal is " + std::to_string(_select));
+
+// 	}
+// }
+
+
 
 /*
 ** Destructor
