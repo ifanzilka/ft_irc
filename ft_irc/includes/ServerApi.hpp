@@ -6,7 +6,7 @@
 /*   By: ifanzilka <ifanzilka@student.42.fr>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/04/14 00:49:56 by bmarilli          #+#    #+#             */
-/*   Updated: 2022/07/29 04:59:59 by ifanzilka        ###   ########.fr       */
+/*   Updated: 2022/07/30 06:28:48 by ifanzilka        ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -75,12 +75,11 @@ class AbstractServerApi
 	public:
 
 		/* Virtual i talk mast have in realizate */
-		//virtual	int			WaitEvent(int &client_fd) = 0;
-		//virtual int			CheckAccept() = 0;
-		//virtual	int 		CheckRead() = 0;
-		//virtual int		CheckWrite() = 0;
-		//		virtual	int			ReadFd(int fd);
 
+		virtual	int		WaitEvent() = 0;
+		virtual	int		CheckConnect() = 0;
+		virtual	int		CheckDisconnect() = 0;
+		virtual	int		CheckAndRead() = 0;
 
 		std::string			GetHostName();
 		int					GetPort();
@@ -106,7 +105,13 @@ class AbstractServerApi
 		/* MSG in READ */
 		std::string 		_msg;
 
-	
+
+		/* Helper */
+		int 				_last_iter_connect;
+		int 				_last_iter_disconnect;
+		int 				_last_iter_read;
+
+
 		/* Говорю что можно переопределить */
 		virtual	void		Init(std::string& ipaddr, int port);
 		virtual int 		Create_socket();
@@ -114,7 +119,7 @@ class AbstractServerApi
 		virtual int 		Listen();
 		virtual	int 		Accept();
 		virtual	int 		ReadInFd(int fd);
-		virtual	int 		SendInFd(int fd, std::string &msg);
+		virtual	int 		SendInFd(int fd, std::string msg);
 		virtual	int			SendInFd(int fd, const char *msg, size_t size);
 
 

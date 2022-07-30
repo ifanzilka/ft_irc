@@ -12,15 +12,25 @@ int main(int argc, char **argv)
     
     if (argc > 1)
 	{
-		//ServerSelect  serv("127.0.0.1", atoi(argv[1]));
-        ServerPoll    serv("127.0.0.1", atoi(argv[1]));
+		ServerSelect  serv("127.0.0.1", atoi(argv[1]));
+        //ServerPoll    serv("127.0.0.1", atoi(argv[1]));
         //ServerKqueue  serv("127.0.0.1", atoi(argv[1]));
         //ServerEpoll     serv("127.0.0.1", atoi(argv[1]));
         
+        // while (1)
+        // {
+        //     serv.Start();
+        // }
+
+        int events;
         while (1)
         {
-            serv.Start();
+            events = serv.WaitEvent();
+            serv.CheckConnect();
+            serv.CheckDisconnect();
+            serv.CheckAndRead();
         }
+        events--;
 		//serv.Start();
 	}
 	else

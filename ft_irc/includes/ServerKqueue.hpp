@@ -26,6 +26,13 @@ class ServerKqueue: public AbstractServerApi
 		/* Simple Use */
 		void Start();
 
+		/* Main Functional*/
+		int		WaitEvent();
+		int		CheckConnect();
+		int		CheckDisconnect();
+		int		CheckAndRead();
+
+
 		//virtual int			WaitEvent(int &client_fd);
 		//virtual int			CheckAccept();
 		//virtual	int 		CheckRead();

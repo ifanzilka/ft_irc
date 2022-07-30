@@ -132,29 +132,124 @@ void ServerSelect::Start()
 }
 
 
+int 	ServerSelect::check_disconnect(int fd)
+{
+	char c;
+	
+	int res = recv(fd, &c, 1, 0);
 
-// /* Use */
+	if (res == 0)
+	{
+		return (1);
+	}
+	_msg += &c;
+	return (0);
+}
 
-// void ServerSelect::Run()
-// {
-// 	Logger(BLUE, "Run Server select...");
+/* Main Functional */
+int		ServerSelect::WaitEvent()
+{
+	struct timeval 	time;
+	int 			_select;
 
-// 	int 			_select;
+	time.tv_sec = 0;
+	time.tv_usec = 0;
 
-// 	while (1)
-// 	{
+	/* Множества приравниваю */
+	_writefds = _readfds = _currfds;
+	Logger(BLUE, "Wait select...");
 
-// 		/* Множества приравниваю */
-// 		_writefds = _readfds = _currfds;
-// 		Logger(BLUE, "Wait select...");
+	/* Останавливаю процесс для отловки событий */
+	_select = select(_max_fd + 1, &_readfds, NULL, NULL, NULL);
+	Logger(B_GRAY, "Select signal is " + std::to_string(_select));
+	_last_iter_disconnect = 0;
+	_last_iter_connect = 0;
+	_last_iter_read = 0;
 
-// 		/* Останавливаю процесс для отловки событий */
-// 		_select = select(_max_fd + 1, &_readfds, NULL, NULL, NULL);
-// 		Logger(B_GRAY, "Select signal is " + std::to_string(_select));
+	/*  Error */
+	if (_select == -1)
+	{
+		AbstractServerApi::ServerError("Select -1");
+		return (-1);
+	}
+	else if (_select == 0) 
+	{
+		/* TimeOut in Select */
+		Logger(RED, "TimeOut Select ");
+		return (0);
+	}
+	else
+	{
+		return (_select);
+	}
+}
 
-// 	}
-// }
+int		ServerSelect::CheckConnect()
+{
+	int client_fd;
+	
+	/* Check new client */
+	if (FD_ISSET(_server_fd, &_readfds))
+	{
+		client_fd = AbstractServerApi::Accept();
+		if (client_fd > 0)
+		{
+			AbstractServerApi::SetNonBlockingFd(client_fd);
+			select_add(client_fd);
+		}
+		return (client_fd);
+	}
+	return (0);
+}
 
+int		ServerSelect::CheckDisconnect()
+{
+	Logger(BLUE, "Check Disconnect...");
+	int res;
+
+	for (int i = _last_iter_disconnect; i < _max_fd + 1; i++)
+	{
+
+		if (FD_ISSET(i, &_readfds))
+		{
+			
+
+			res = check_disconnect(i);
+			if (res == 1)
+			{
+				Logger(RED, std::to_string(i) + " Connection close ❌");
+				RemoveClient(i);
+				select_remove(i);
+				_last_iter_disconnect = i;
+
+				return (1);
+			}
+
+		}
+	}
+
+	return (0);
+}
+
+int		ServerSelect::CheckAndRead()
+{
+	Logger(BLUE, "Check read...");
+
+	for (int i = _last_iter_read; i < _max_fd + 1; i++)
+	{
+
+		if (FD_ISSET(i, &_readfds))
+		{
+			
+			int res_read = AbstractServerApi::ReadInFd(i);
+			AbstractServerApi::SendInFd(i, std::string("Sucsess in read\n"));
+			_last_iter_read = i;
+			return (res_read);
+		}
+	}
+
+	return (0);
+}
 
 
 /*

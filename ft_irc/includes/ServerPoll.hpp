@@ -25,6 +25,14 @@ class ServerPoll: public AbstractServerApi
 		// //virtual int 		CheckWrite();
 		// virtual	int			ReadFd(int fd);
 
+
+		/* Main Functional*/
+		int		WaitEvent();
+		int		CheckConnect();
+		int		CheckDisconnect();
+		int		CheckAndRead();
+
+		
 		/* Destructor */
 		virtual ~ServerPoll();
 

@@ -22,6 +22,13 @@ class ServerSelect: public AbstractServerApi
 		/* Simple USE */
 		void Start();
 
+
+		/* Main Functional*/
+		int		WaitEvent();
+		int		CheckConnect();
+		int		CheckDisconnect();
+		int		CheckAndRead();
+
 		/* USE */
 		//void Run();
 
@@ -52,6 +59,7 @@ class ServerSelect: public AbstractServerApi
 		/* Help Function */
 		void 	select_add(int fd);
 		void 	select_remove(int fd);
+		int		check_disconnect(int fd);
 };
 
 #endif

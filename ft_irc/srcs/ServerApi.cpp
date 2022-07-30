@@ -165,7 +165,7 @@ int AbstractServerApi::ReadInFd(int fd)
 	return (1);
 }
 
-int AbstractServerApi::SendInFd(int fd, std::string &msg)
+int AbstractServerApi::SendInFd(int fd, std::string msg)
 {
 	char 	*c_msg = (char *)(const char *)msg.c_str();
 	int 	res_send;

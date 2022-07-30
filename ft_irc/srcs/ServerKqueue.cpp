@@ -119,6 +119,7 @@
 			}
 			else if (client_fd == _server_fd)
 			{
+				printf("i:%d\n", i);
 				int new_client_fd;
 
 				new_client_fd = Accept();
@@ -137,7 +138,100 @@
 		}
 
 	}
+
+	/* Main Functional */
+	int		ServerKqueue::WaitEvent()
+	{
+		Logger(BLUE, "Wait kevent...");
+		bzero(_evList, sizeof(_evList));
+		
+		struct timespec ts;
+		ts.tv_sec = 0;
+		ts.tv_nsec = 0;
+
+		_new_events = kevent(_kq_fd, NULL, 0, _evList, KQUEUE_SIZE, NULL);
+		_last_iter_connect = 0;
+		_last_iter_read = 0;
+		_last_iter_disconnect = 0;
+
+		if (_new_events == -1)
+		{
+			ServerError("kevent");
+			return (-1);
+		}
+		return (_new_events);
+	}
+
+	int		ServerKqueue::CheckConnect()
+	{
+		Logger(BLUE, "Check connect...");
+		int client_fd;
+		int new_client_fd;
+
+		for (int i = _last_iter_connect; i < _new_events; i++)
+		{
+			client_fd = _evList[i].ident;
+
+			if (client_fd == _server_fd)
+			{
+				new_client_fd = Accept();
+				Logger(GREEN, "Connect fd(" + std::to_string(new_client_fd) + ") ✅ ");
+				kqueue_add(new_client_fd);
+				
+				_last_iter_connect = i;
+				return (new_client_fd);
+			}
+		}
+		return (0);
+	}
+
+	int		ServerKqueue::CheckDisconnect()
+	{
+		Logger(BLUE, "Check Disconnect...");
+		int client_fd;
+
+		for (int i = _last_iter_disconnect; i < _new_events; i++)
+		{
+			client_fd = _evList[i].ident;
+
+
+			if (_evList[i].flags & EV_EOF)
+			{
+				Logger(RED, "Disconnect fd(" + std::to_string(client_fd) + ") ❌ ");				
+				kqueue_remove(client_fd);
+				RemoveClient(client_fd);
+
+				_last_iter_disconnect = i;
+				return (client_fd);
+			}
+			
+		}
+		return (0);
+	}
 	
+	int		ServerKqueue::CheckAndRead()
+	{
+		Logger(BLUE, "Check Disconnect...");
+		int client_fd;
+		int res;
+
+		for (int i = _last_iter_read; i < _new_events; i++)
+		{
+			client_fd = _evList[i].ident;
+
+			if (_evList[i].filter == EVFILT_READ)
+			{
+				res = AbstractServerApi::ReadInFd(client_fd);
+				AbstractServerApi::SendInFd(client_fd, std::string("Sucsess in read\n"));
+				//event_flag = EVFILT_READ;
+
+				return (res);
+			}
+			
+		}
+		return (0);
+	}
+
 	ServerKqueue::~ServerKqueue()
 	{
 		close(_kq_fd);

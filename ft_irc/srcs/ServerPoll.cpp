@@ -155,10 +155,159 @@ void ServerPoll::Start()
 	}
 }
 
+
+
+/* Main Functional */
+int	ServerPoll::WaitEvent()
+{
+	Logger(BLUE, "Wait Event...");
+
+
+	int result;
+	int timeout = -1;
+
+	/* Массив дискрипторов и размер его*/
+	result = poll(& _pollfds[0], _pollfds.size(), timeout);
+	Logger(B_GRAY, "Poll return " + std::to_string(result));
+	
+	if (result == -1)
+	{
+		ServerError("Poll: ");
+	}
+	else if (result == EINVAL)
+	{
+		Logger(RED, "TimeOut 🕐 ");
+	}
+		return (result);
+}
+
+
+int		ServerPoll::CheckConnect()
+{
+	Logger(BLUE, "Check connect ");
+	
+	int 				client_fd;
+
+	/* Check connect*/
+	if( _pollfds[0].revents != 0)
+	{
+		client_fd = Accept();
+		if (client_fd < 0)
+		{
+			if (errno != EWOULDBLOCK)
+				ServerError("Accept");
+		}
+		else
+		{
+			AbstractServerApi::SetNonBlockingFd(client_fd);
+			poll_add(client_fd, POLLIN);
+			return (client_fd);
+		}
+	}
+	return (0);
+}
+
+int		ServerPoll::CheckDisconnect()
+{
+	int 	res;
+	int 	fd_read;
+	int 	i = 0;
+	int 	j = 0;
+
+	fd_read = 0;
+	/* Read */
+	Logger(BLUE, "Check Disconnect...");
+	std::vector<struct pollfd>::iterator	it = _pollfds.begin();
+	std::vector<struct pollfd>::iterator	it_end = _pollfds.end();
+
+	
+	while (it != it_end)
+	{
+		while (i < _last_iter_disconnect)
+		{
+			i++;
+			j++;
+			it++;
+		}
+
+		if (it->fd == _server_fd || it->revents  == 0)
+		{
+			it++;
+			j++;
+			continue;
+		}
+
+		_last_iter_disconnect = j;
+
+		fd_read = it->fd;
+		break;
+	}
+	if (it == it_end)
+		return (0);
+
+	res = check_disconnect(fd_read);
+
+	if (res == 1)
+	{
+		Logger(RED, "Disconnect fd(" + std::to_string(fd_read) + ") ❌ ");
+		Logger(B_GRAY, "Remove fd " + std::to_string(fd_read));
+		
+		RemoveClient(it->fd);
+		close(it->fd);
+		_pollfds.erase(it);
+	}
+	return (res);
+}
+
+
+int		ServerPoll::CheckAndRead()
+{
+	int 	fd_read;
+	int 	res;
+	int 	i = 0;
+	int 	j = 0;
+
+	fd_read = 0;
+	/* Read */
+	Logger(BLUE, "Check read...");
+	std::vector<struct pollfd>::iterator	it = _pollfds.begin();
+	std::vector<struct pollfd>::iterator	it_end = _pollfds.end();
+
+	
+	while (it != it_end)
+	{
+		while (i < _last_iter_read)
+		{
+			i++;
+			j++;
+			it++;
+		}
+
+		if (it->fd == _server_fd || it->revents  == 0)
+		{
+			it++;
+			j++;
+			continue;
+		}
+
+		_last_iter_read = j;
+
+		fd_read = it->fd;
+		break;
+	}
+	if (it == it_end)
+		return (0);
+
+	res = AbstractServerApi::ReadInFd(fd_read);
+	if (res == 1)
+	{
+		AbstractServerApi::SendInFd(fd_read, std::string("Sucsess in read\n"));
+	}
+	return (res);
+}
+
 /* Destructor */
 ServerPoll::~ServerPoll()
 {
-	Logger(RED, "Call ServerPoll Destructor ❌ ");
-
-	
+	Logger(RED, "Call ServerPoll Destructor ❌ ");	
 }
