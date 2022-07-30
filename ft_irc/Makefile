@@ -6,7 +6,7 @@
 #    By: ifanzilka <ifanzilka@student.42.fr>        +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2022/07/17 21:11:43 by ifanzilka         #+#    #+#              #
-#    Updated: 2022/07/22 23:02:22 by ifanzilka        ###   ########.fr        #
+#    Updated: 2022/07/23 02:13:06 by ifanzilka        ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -18,7 +18,7 @@
 CXX = clang++
 
 #Compilation flag
-CPPFLAGS = -Wall -Wextra -Werror -std=c++98
+CPPFLAGS = -Wall -Wextra -Werror #-std=c++98
 
 INCLUDES = includes
 

@@ -126,6 +126,104 @@ void ServerEpoll::Start()
 	}
 }
 
+
+/* Main Functional */
+int		ServerEpoll::WaitEvent()
+{
+	Logger(BLUE, "Wait epoll_wait...");
+	
+	//int n_events;
+	int timeout;
+
+	timeout = -1;
+	_new_events = epoll_wait(_epfd, _events, EPOLL_SIZE, timeout);
+	_last_iter_connect = 0;
+	_last_iter_read = 0;
+	_last_iter_disconnect = 0;
+
+	if (_new_events == -1)
+	{
+		ServerError("epoll_wait");
+		return (-1);
+	}
+	return (_new_events);
+}
+
+int		ServerEpoll::CheckConnect()
+{
+	Logger(BLUE, "Check connect...");
+	//int client_fd;
+	//int new_client_fd;
+
+	for (int i = _last_iter_connect; i < _new_events; i++)
+	{
+		if (_events[i].data.fd == _server_fd)
+		{
+
+			int client_fd = Accept();
+			if (client_fd < 0)
+			{
+				ServerError("Accept");
+				return (-1);
+			}
+			else
+			{
+				AbstractServerApi::SetNonBlockingFd(client_fd);
+				epoll_add(client_fd,  EPOLLIN | EPOLLET | EPOLLRDHUP | EPOLLHUP);
+				_last_iter_connect = i;
+				return	(client_fd);
+			}
+		} 
+	}
+	return (0);
+}
+
+int		ServerEpoll::CheckDisconnect()
+{
+	Logger(BLUE, "Check Disconnect...");
+	//int client_fd;
+
+
+	for (int i = _last_iter_connect; i < _new_events; i++)
+	{
+		
+		if (_events[i].events & (EPOLLRDHUP | EPOLLHUP))
+		{
+				Logger(RED, std::to_string(_events[i].data.fd) + " Connection close ❌");
+				epoll_ctl(_epfd, EPOLL_CTL_DEL, _events[i].data.fd, NULL);
+				RemoveClient(_events[i].data.fd);
+				close(_events[i].data.fd);
+				_last_iter_disconnect = i;
+				return (1);
+		}
+		
+	}
+	return (0);
+}
+	
+int		ServerEpoll::CheckAndRead()
+{
+	Logger(BLUE, "CheckAndRead...");
+	
+
+	for (int i = _last_iter_read; i < _new_events; i++)
+	{
+		if (_events[i].events & EPOLLIN && _events[i].data.fd != _server_fd)
+		{
+			int res = AbstractServerApi::ReadInFd(_events[i].data.fd);
+			_last_iter_read = i;
+			if (res == 1)
+				AbstractServerApi::SendInFd(_events[i].data.fd, std::string("Sucsess in read\n"));
+			return (res);
+
+		}
+		
+	}
+	
+	return (0);
+}
+
+
 /* Destructor */
 ServerEpoll::~ServerEpoll()
 {

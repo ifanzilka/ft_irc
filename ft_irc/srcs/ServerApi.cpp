@@ -124,6 +124,7 @@ int AbstractServerApi::ReadInFd(int fd)
 
 	bzero(buffer, RECV_BUFFER_SIZE);
 
+	//printf("Read in fd:%d\n", fd);
 	int ret = recv(fd, buffer, RECV_BUFFER_SIZE - 1, 0);
 	if (ret == 0)
 	{

@@ -22,10 +22,19 @@
 			/* Simple use */
 			void Start();
 
+			/* Main Functional*/
+			int		WaitEvent();
+			int		CheckConnect();
+			int		CheckDisconnect();
+			int		CheckAndRead();
+
+
 			/* Destructor */
 			virtual ~ServerEpoll();
 
 		private:
+
+			int _new_events;
 
 			/* Descriptor in  queue */
 			struct epoll_event	_events[EPOLL_SIZE];
