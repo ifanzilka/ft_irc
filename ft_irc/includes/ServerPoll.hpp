@@ -19,12 +19,6 @@ class ServerPoll: public AbstractServerApi
 
 		/* Simple use */
 		void Start();
-		// virtual int			WaitEvent(int &client_fd);
-		// virtual int			CheckAccept();
-		// virtual	int 		CheckRead();
-		// //virtual int 		CheckWrite();
-		// virtual	int			ReadFd(int fd);
-
 
 		/* Main Functional*/
 		int		WaitEvent();

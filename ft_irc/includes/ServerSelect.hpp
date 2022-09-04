@@ -28,20 +28,7 @@ class ServerSelect: public AbstractServerApi
 		int		CheckConnect();
 		int		CheckDisconnect();
 		int		CheckAndRead();
-
-		/* USE */
-		//void Run();
-
-		/* Events */
-		//virtual	int			WaitEvent(int &client_fd);
-		//virtual	int			CheckAccept();
-		//virtual	int			CheckRead();
-		//virtual void 		CheckWrite();
-		//virtual	int			ReadFd(int clinet_fd);
-
-
-		/* Main functional */
-		//void 		Run();
+	
 
 		/* Destructor */
 		virtual ~ServerSelect();

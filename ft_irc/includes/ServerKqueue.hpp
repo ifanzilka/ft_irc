@@ -33,18 +33,10 @@ class ServerKqueue: public AbstractServerApi
 		int		CheckAndRead();
 
 
-		//virtual int			WaitEvent(int &client_fd);
-		//virtual int			CheckAccept();
-		//virtual	int 		CheckRead();
-		//virtual int 		CheckWrite();
-		//virtual	int			ReadFd(int fd);
-
 		/* Destructor */
 		virtual ~ServerKqueue();
 
-		//void	disableReadEvent(int socket, void *udata);
-		//void	enableWriteEvent(int socket, void *udata);
-		//void	disableWriteEvent(int socket, void *udata);
+
 	private:
 		/* Init */
 		void 	Init_Serv();
@@ -54,8 +46,6 @@ class ServerKqueue: public AbstractServerApi
 		void 	kqueue_remove(int fd);
 
 
-		//void			addWriteEvent(int socket, void *udata);
-		//void			addReadEvent(int socket, void *udata);
 		
 		int	 			_new_events;
 		int				client_fd;
@@ -66,10 +56,6 @@ class ServerKqueue: public AbstractServerApi
 
 		/* Очередь (дескриптор) */
 		int			_kq_fd;
-
-		
-		//void 	AddFd(int fd);
-		//void	RemoveFd(int client_fd);
 };
 
 #endif
