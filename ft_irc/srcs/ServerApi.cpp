@@ -99,7 +99,6 @@ int	AbstractServerApi::Accept()
 
 	struct sockaddr_in	clientaddr;
 	socklen_t 			len;
-	std::string			tmp;
 	int 				client_fd;
 	char 				buf[BUFFER_SIZE];
 
@@ -121,7 +120,6 @@ int	AbstractServerApi::Accept()
 	Logger(GREEN, "New connection as fd:(" + std::to_string(client_fd) + ") ✅ ");
 	Logger(GREEN, "New connection as address: (" + std::string(buf) + ") ✅ ");
 	Logger(GREEN, "New connection as port:(" + std::to_string(clientaddr.sin_port) + ") ✅ ");
-	Logger(GREEN, "New connection as host: " + tmp + ") ✅ ");
 	return (client_fd);
 }
 
@@ -233,18 +231,20 @@ int AbstractServerApi::SendInFd(int fd, const char *msg, size_t size)
 void 	AbstractServerApi::AddClient(int fd_client, sockaddr_in addrinfo_client, std::string server_ipaddr)
 {
 	//Client   new_client(int fd_client, sockaddr_in addrinfo_client, std::string server_ipaddr);
-	Client   *new_client = new Client (fd_client, addrinfo_client, server_ipaddr);
-
+	//Client   *new_client = new Client (fd_client, addrinfo_client, server_ipaddr);
+	ClientIrc *new_client =  new ClientIrc (fd_client, addrinfo_client, server_ipaddr);
 
 	_Clients.push_back(new_client);
+
+	std::cout <<  new_client->getInfoClient() << std::endl;
 
 }
 
 /* Remove */
 void 	AbstractServerApi::RemoveClient(int fd_client)
 {
-	std::vector<Client*>::iterator it = _Clients.begin();
-	std::vector<Client*>::iterator it_end = _Clients.end();
+	std::vector<ClientIrc*>::iterator it = _Clients.begin();
+	std::vector<ClientIrc*>::iterator it_end = _Clients.end();
 
 
 	while (it < it_end)

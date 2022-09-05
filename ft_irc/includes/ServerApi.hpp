@@ -6,7 +6,7 @@
 /*   By: ifanzilka <ifanzilka@student.42.fr>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/04/14 00:49:56 by bmarilli          #+#    #+#             */
-/*   Updated: 2022/09/05 02:33:12 by ifanzilka        ###   ########.fr       */
+/*   Updated: 2022/09/05 22:27:52 by ifanzilka        ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -35,6 +35,7 @@
 #include <strings.h>	/* bzero */
 #include <string.h>		/* strerror */
 
+#include "ClientIrc.hpp"	/* Client */
 
 #define SERVER_PROTOCOL 	AF_INET 	//IpV4
 #define	SERVER_TYPE			SOCK_STREAM //TCP
@@ -46,33 +47,6 @@
 
 #define LOGGER_ENABLE		1			//1 - ON, 0 - OFF
 
-class Client
-{
-	public:
-
-		/* Constructor */
-		Client(int fd_client, sockaddr_in 	addrinfo_client, std::string server_ipaddr)
-		{
-			_fd = fd_client;
-			_addrinfo = addrinfo_client;
-			_server_ipaddr = server_ipaddr;
-		};
-
-		int getFd() const
-		{ 
-			return (_fd);
-		}
-		
-		struct sockaddr_in getAddrInfo() const
-		{
-			return (_addrinfo);
-		}
-
-	private:
-		struct sockaddr_in 	_addrinfo;
-		int					_fd;
-		std::string			_server_ipaddr;
-};
 
 class AbstractServerApi
 {
@@ -138,7 +112,7 @@ class AbstractServerApi
 	
 
 		/* Clients */
-		std::vector<Client*> _Clients;
+		std::vector<ClientIrc*> _Clients;
 
 		/* Add new  Client */
 		void 	AddClient(int fd_client, sockaddr_in 	addrinfo_client, std::string server_ipaddr);
