@@ -186,6 +186,8 @@ int		ServerSelect::WaitEvent()
 
 int		ServerSelect::CheckConnect()
 {
+	Logger(BLUE, "Check connect...");
+
 	int client_fd;
 	
 	/* Check new client */

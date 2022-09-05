@@ -211,7 +211,7 @@
 	
 	int		ServerKqueue::CheckAndRead()
 	{
-		Logger(BLUE, "Check Disconnect...");
+		Logger(BLUE, "CheckAndRead...");
 		int client_fd;
 		int res;
 

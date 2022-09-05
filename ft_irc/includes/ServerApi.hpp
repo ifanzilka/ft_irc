@@ -6,7 +6,7 @@
 /*   By: ifanzilka <ifanzilka@student.42.fr>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/04/14 00:49:56 by bmarilli          #+#    #+#             */
-/*   Updated: 2022/07/30 06:28:48 by ifanzilka        ###   ########.fr       */
+/*   Updated: 2022/09/05 02:33:12 by ifanzilka        ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,6 +18,7 @@
 #include <netinet/in.h> /* struct sockaddr_in */
 #include <arpa/inet.h>	/* inet_addr inet_htop */
 #include <sys/socket.h>	/* socket */
+#include <netdb.h>		/* getnameinfo */
 #include <errno.h>		/* errno */
 #include <fcntl.h>		/* open */
 #include <unistd.h>		/* write */
@@ -34,11 +35,14 @@
 #include <strings.h>	/* bzero */
 #include <string.h>		/* strerror */
 
+
 #define SERVER_PROTOCOL 	AF_INET 	//IpV4
 #define	SERVER_TYPE			SOCK_STREAM //TCP
 #define MAX_CONNECT_LISTEN 	15			//In Listen
 #define	BUFFER_SIZE_SEND	2		//Send
 #define RECV_BUFFER_SIZE	3			//Read
+#define BUFFER_SIZE			1024
+
 
 #define LOGGER_ENABLE		1			//1 - ON, 0 - OFF
 
@@ -122,6 +126,11 @@ class AbstractServerApi
 		virtual	int 		SendInFd(int fd, std::string msg);
 		virtual	int			SendInFd(int fd, const char *msg, size_t size);
 
+
+
+		/* Help function */
+		void GetNameInfo(const sockaddr *);
+		void PrintHostName(void);
 
 		/* Print Errno */
 		virtual	void	ServerError(const char *s);

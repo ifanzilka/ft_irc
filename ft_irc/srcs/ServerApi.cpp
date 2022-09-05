@@ -46,7 +46,9 @@ void AbstractServerApi::Init(std::string& ipaddr, int port)
 		log_file_name += "_log.txt";
 		_logs.open(log_file_name, std::ios::ate);
 		Logger(GREEN, std::string("Init Server!"));
+		PrintHostName();
 	#endif
+	
 }
 
 int AbstractServerApi::Create_socket()
@@ -97,8 +99,9 @@ int	AbstractServerApi::Accept()
 
 	struct sockaddr_in	clientaddr;
 	socklen_t 			len;
+	std::string			tmp;
 	int 				client_fd;
-	char 				buf[1024];
+	char 				buf[BUFFER_SIZE];
 
 	// Incoming socket connection on the listening socket.
 	// Create a new socket for the actual connection to client.
@@ -108,13 +111,17 @@ int	AbstractServerApi::Accept()
 		ServerError("Accept");
 		return (-1);
 	}
+	
+	GetNameInfo((struct sockaddr *) &clientaddr);
+	
 	AddClient(client_fd, clientaddr, _ipaddr);
 
 	inet_ntop(SERVER_PROTOCOL, (char *)&(clientaddr.sin_addr), buf, sizeof(clientaddr));
-	
+
 	Logger(GREEN, "New connection as fd:(" + std::to_string(client_fd) + ") ✅ ");
 	Logger(GREEN, "New connection as address: (" + std::string(buf) + ") ✅ ");
 	Logger(GREEN, "New connection as port:(" + std::to_string(clientaddr.sin_port) + ") ✅ ");
+	Logger(GREEN, "New connection as host: " + tmp + ") ✅ ");
 	return (client_fd);
 }
 
@@ -304,6 +311,33 @@ void AbstractServerApi::Logger(std::string color, std::string msg)
 	
 	#endif
 }
+
+
+void AbstractServerApi::GetNameInfo(const sockaddr * clientaddr)
+{
+	char 				hbuf[NI_MAXHOST], sbuf[NI_MAXSERV];
+
+	if (getnameinfo(clientaddr, clientaddr->sa_len, hbuf, sizeof(hbuf), sbuf, sizeof(sbuf), NI_NUMERICHOST | NI_NUMERICSERV))
+	{
+		ServerError("getnameinfo");
+	}
+	//printf("host=%s, serv=%s\n", hbuf, sbuf);
+}
+
+
+/* Server host: MacBook-Air-Fanzil.local */
+void AbstractServerApi::PrintHostName(void)
+{
+	std::string tmp;
+	char buf[BUFFER_SIZE];
+	
+	
+	gethostname(buf, BUFFER_SIZE);
+	tmp += buf;
+	Logger(GREEN, "Server host: " + tmp);
+}
+
+
 
 void AbstractServerApi::PrintSockaddrInfo(struct sockaddr_in *info)
 {
