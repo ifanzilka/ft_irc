@@ -4,6 +4,7 @@
 #include <ServerSelect.hpp>
 #include <ServerKqueue.hpp>
 #include <ServerEpoll.hpp>
+#include <IrcServer.hpp>
 
 int main(int argc, char **argv)
 {
@@ -12,8 +13,9 @@ int main(int argc, char **argv)
     
     if (argc > 1)
 	{
+        IrcServer serv(atoi(argv[1]), "89639019932");
 		//ServerSelect  serv("127.0.0.1", atoi(argv[1]));
-        ServerPoll    serv("127.0.0.1", atoi(argv[1]));
+        //ServerPoll    serv("127.0.0.1", atoi(argv[1]));
         //ServerKqueue  serv("127.0.0.1", atoi(argv[1]));
         //ServerEpoll serv("127.0.0.1", atoi(argv[1]));
         
@@ -22,19 +24,36 @@ int main(int argc, char **argv)
         //     serv.Start();
         // }
 
+        // int events;
+        // while (1)
+        // {
+        //     events = serv.WaitEvent();
+        //     int connect = serv.CheckConnect();
+        //     if (connect > 0)
+        //         continue;
+            
+        //     connect = serv.CheckDisconnect();
+        //     if (connect > 0)
+
+        //         continue;
+
+        //     serv.CheckAndRead();
+        // }
+
         int events;
         while (1)
         {
-            events = serv.WaitEvent();
-            int connect = serv.CheckConnect();
+            events = serv._MainServer->WaitEvent();
+            int connect = serv._MainServer->CheckConnect();
             if (connect > 0)
                 continue;
             
-            connect = serv.CheckDisconnect();
+            connect = serv._MainServer->CheckDisconnect();
             if (connect > 0)
+
                 continue;
 
-            serv.CheckAndRead();
+            serv._MainServer->CheckAndRead();
         }
         events--;
 		//serv.Start();

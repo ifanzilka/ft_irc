@@ -6,7 +6,7 @@
 /*   By: ifanzilka <ifanzilka@student.42.fr>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/04/14 00:49:56 by bmarilli          #+#    #+#             */
-/*   Updated: 2022/09/05 22:27:52 by ifanzilka        ###   ########.fr       */
+/*   Updated: 2022/09/07 01:55:07 by ifanzilka        ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -64,6 +64,8 @@ class AbstractServerApi
 		void				PrintSockaddrInfo(struct sockaddr_in *info);
 		int					SetNonBlockingFd(int fd);
 
+		void			Logger(std::string color,std::string msg);
+
 		/* Main Functional */
 		//virtual void 				Run() = 0;
 
@@ -108,7 +110,7 @@ class AbstractServerApi
 
 		/* Print Errno */
 		virtual	void	ServerError(const char *s);
-		void			Logger(std::string color,std::string msg);
+		
 	
 
 		/* Clients */
