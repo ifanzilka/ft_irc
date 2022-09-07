@@ -43,17 +43,17 @@ int main(int argc, char **argv)
         int events;
         while (1)
         {
-            events = serv._MainServer->WaitEvent();
-            int connect = serv._MainServer->CheckConnect();
+            events = serv.WaitEvent();
+            int connect = serv.CheckConnect();
             if (connect > 0)
                 continue;
             
-            connect = serv._MainServer->CheckDisconnect();
+            connect = serv.CheckDisconnect();
             if (connect > 0)
 
                 continue;
 
-            serv._MainServer->CheckAndRead();
+            serv.CheckAndRead();
         }
         events--;
 		//serv.Start();

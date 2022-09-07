@@ -45,7 +45,42 @@ class IrcServer
             delete _MainServer;
         }
 
-    //protected:
+        /* Function Main Server */
+
+        int WaitEvent()
+        {
+            int res_return;
+
+            res_return = _MainServer->WaitEvent();
+            return (res_return);
+        }
+
+        int CheckConnect()
+        {
+            int res_return;
+
+            res_return = _MainServer->CheckConnect();
+            return (res_return);
+        }
+
+        int CheckDisconnect()
+        {
+            int res_return;
+
+            res_return = _MainServer->CheckDisconnect();
+            return (res_return);
+        }
+
+        int CheckAndRead()
+        {
+            int res_return;
+
+            res_return = _MainServer->CheckAndRead();
+            return (res_return);
+        }
+        
+
+    protected:
         AbstractServerApi *_MainServer;
         std::string        _pass;
         std::string        _pass_hash;
