@@ -297,7 +297,7 @@ int		ServerPoll::CheckAndRead()
 	}
 	if (it == it_end)
 		return (0);
-
+		
 	res = AbstractServerApi::ReadInFd(fd_read);
 	if (res == 1)
 	{

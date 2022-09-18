@@ -5,7 +5,6 @@
 #include "ServerApi.hpp"
 #include <poll.h>		/* poll */
 
-
 #include <vector>
 
 class ServerPoll: public AbstractServerApi

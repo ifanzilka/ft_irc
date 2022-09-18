@@ -27,6 +27,8 @@ class Client
 		struct sockaddr_in 	_addrinfo;
 		int					_fd;
 		std::string			_server_ipaddr;
+
+
 };
 
 
@@ -72,6 +74,7 @@ class ClientIrc: public Client
 
     private:
         std::string    _name;
+        std::string    _nickname;
         bool           _isconnect;
 
 };

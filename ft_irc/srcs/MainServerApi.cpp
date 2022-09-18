@@ -11,9 +11,9 @@ int main(int argc, char **argv)
     (void)argc;
     (void)argv;    
     
-    if (argc > 1)
+    if (argc > 2)
 	{
-        IrcServer serv(atoi(argv[1]), "89639019932");
+        IrcServer serv(atoi(argv[1]), argv[2]);
 		//ServerSelect  serv("127.0.0.1", atoi(argv[1]));
         //ServerPoll    serv("127.0.0.1", atoi(argv[1]));
         //ServerKqueue  serv("127.0.0.1", atoi(argv[1]));
@@ -41,6 +41,7 @@ int main(int argc, char **argv)
         // }
 
         int events;
+        int res;
         while (1)
         {
             events = serv.WaitEvent();
@@ -53,14 +54,20 @@ int main(int argc, char **argv)
 
                 continue;
 
-            serv.CheckAndRead();
+            res = serv.CheckAndRead();
+            if (res == 1)
+            {
+                serv.ParseMessage();
+            }
+
+
         }
         events--;
 		//serv.Start();
 	}
 	else
 	{
-		std::cout << "Use: webserv port\n";
+		std::cout << "Use: webserv port password\n";
 	}
 
     return (42);
