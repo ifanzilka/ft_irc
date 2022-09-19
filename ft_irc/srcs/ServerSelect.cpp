@@ -208,7 +208,9 @@ int		ServerSelect::CheckDisconnect()
 {
 	Logger(BLUE, "Check Disconnect...");
 	int res;
+	int fd_close;
 
+	fd_close = 0;
 	for (int i = _last_iter_disconnect; i < _max_fd + 1; i++)
 	{
 
@@ -224,13 +226,13 @@ int		ServerSelect::CheckDisconnect()
 				select_remove(i);
 				_last_iter_disconnect = i;
 
-				return (1);
+				fd_close = i;
 			}
 
 		}
 	}
 
-	return (0);
+	return (fd_close);
 }
 
 int		ServerSelect::CheckAndRead()
@@ -246,7 +248,8 @@ int		ServerSelect::CheckAndRead()
 			int res_read = AbstractServerApi::ReadInFd(i);
 			AbstractServerApi::SendInFd(i, std::string("Sucsess in read\n"));
 			_last_iter_read = i;
-			return (res_read);
+			return (i);
+			//return (res_read);
 		}
 	}
 

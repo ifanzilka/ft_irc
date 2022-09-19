@@ -129,36 +129,25 @@ int AbstractServerApi::ReadInFd(int fd)
 
 	bzero(buffer, RECV_BUFFER_SIZE);
 
-	//printf("Read in fd:%d\n", fd);
-	//_msg = std::string("");
 	int ret = recv(fd, buffer, RECV_BUFFER_SIZE - 1, 0);
 	if (ret == 0)
 	{
 		/* Api poll*/
-		// Logger(RED, "Disconnect fd(" + std::to_string(fd) + ") ❌ ");
-		// Logger(B_GRAY, "Remove fd " + std::to_string(fd));
+		Logger(RED, "Disconnect fd(" + std::to_string(fd) + ") ❌ ");
+		Logger(B_GRAY, "Remove fd " + std::to_string(fd));
 		return (0);
 	}
 	else
 	{
-		// std::cout << "len msg: " << _msg.size() << std::endl;
-		// std::cout << "msg: " << _msg << std::endl;
-
 		if (_msg.size()  > 1 )
 		{
 			_msg = _msg.substr(0, 1);
 		}
-
-		// std::cout << "len msg: " << _msg.size() << std::endl;
-		// std::cout << "msg: " << _msg << std::endl;
-
 		_msg += buffer;
 
 		// Logger(PURPLE, "Recv read " + std::to_string(ret) + " bytes");
 		// Logger(B_GRAY, "buff:!" + std::string(buffer)+ std::string("!"));
-		// std::cout << "buff2:" << buffer << std::endl;
-		// std::cout << "msg:" << _msg << std::endl;
-		// std::cout << "buf[0]:" << buffer[0] << std::endl;
+
 		/* Read */
 		while (ret == RECV_BUFFER_SIZE - 1)
 		{
@@ -176,11 +165,7 @@ int AbstractServerApi::ReadInFd(int fd)
 
 			Logger(GREEN, "Data is read is " + std::to_string(_msg.size()) + " bytes  ✅ ");
 			Logger(B_GRAY, _msg);
-			// std::cout << "Msg:!\n" << _msg << "!\n";
-			// std::cout << "Msg:!\n" << (int)_msg[1] << "!\n";
 			//_msg = ""; 
-			//USER Adium * 127.0.0.1 :Пользователь Adium
-			//NICK ifanzilka
 			
 			//AbstractServerApi::SendInFd(fd, "Message Sucsefull\n", 18);
 			//send(fd, "Message Sucsefull", 17, 0);

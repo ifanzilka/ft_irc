@@ -194,7 +194,8 @@ int		ServerEpoll::CheckDisconnect()
 				RemoveClient(_events[i].data.fd);
 				close(_events[i].data.fd);
 				_last_iter_disconnect = i;
-				return (1);
+				return (events[i].data.fd);
+				//return (1);
 		}
 		
 	}
@@ -214,8 +215,9 @@ int		ServerEpoll::CheckAndRead()
 			_last_iter_read = i;
 			if (res == 1)
 				AbstractServerApi::SendInFd(_events[i].data.fd, std::string("Sucsess in read\n"));
-			return (res);
-
+			
+			return (_events[i].data.fd);
+			//return (res);
 		}
 		
 	}

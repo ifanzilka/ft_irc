@@ -72,10 +72,16 @@ class ClientIrc: public Client
             _name = name;
         }
 
+        void ChangeStatusConnect()
+        {
+            _isconnect = true;
+        }
+
+
     private:
         std::string    _name;
         std::string    _nickname;
-        bool           _isconnect;
+        bool           _isconnect; /* If succsecc password */
 
 };
  

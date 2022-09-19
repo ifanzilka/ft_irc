@@ -76,9 +76,12 @@ class IrcServer
             int res_return;
 
             res_return = _MainServer->CheckAndRead();
+            std::cout << "res_return: " << res_return << std::endl; 
             return (res_return);
         }
 
+
+        //std::map<int , Client>;
 
 
 
@@ -101,99 +104,120 @@ class IrcServer
             // }
             // std::cout << _MainServer->_msg << std::endl;
 
-
-
-
-
-
-
-
             std::vector<std::string> res = split(_MainServer->_msg, DELIMETER_COMAND);
+            std::vector<std::string> res_cmd;
 
             for (unsigned int i = 0; i < res.size(); i++)
             {
-                std::cout << "cmd: \n";
-                std::cout << res[i] << std::endl;
-                std::cout << "!" << res[i][0]  << "!" << std::endl;
-                std::cout << "!" << res[i][1]  << "!" << std::endl;
-                std::cout << "!" << res[i][2]  << "!" << std::endl;
-                std::cout << "!" << res[i][3]  << "!" << std::endl;
+                if (res[i] != "")
+                {
+                    std::cout << "!Check comand: !" << res[i] << "!\n";
+                    std::vector<std::string> res_cmd = splitCommand(res[i]);
+                    for (unsigned int j = 0; j < res_cmd.size(); j++)
+                    {
+                        if (res[i] != "")
+                        {
+                            std::cout << "!cmds: !" << res_cmd[j] << "!\n";
 
-                if (res[i].find("PASS") != std::string::npos)
-                    std::cout << "Pass finded\n";
-                //CheckCommand( res[i]);
+                            //CheckCommand(res[i]);
+                            
+                        }
+
+                    }
+
+                    //CheckCommand(res[i]);
+                    
+                }
+
             }
             _MainServer->_msg = "";
         }
 
         void CheckCommand(std::string &request)
         {
-            
-            //  if(request.find((char)5) != std::string::npos)
-            //     request.erase(request.find((char)5));
-
-        
-            std::vector<std::string>    sumCommand;
-            std::string                 temp = "";
-            std::size_t                 pos;
+            std::vector<std::string> split_cmd;
 
             if(request.find('\n') != std::string::npos)
                 request.erase(request.find('\n'));
             if(request.find('\r') != std::string::npos)
                 request.erase(request.find('\r'));
-            while(!isalpha(request[0]) || request.empty())
-            {
-                request.erase(0, 1);
-            }
+            
 
-            if(request.empty())
+            split_cmd = split(request, " ");
+
+            for (unsigned int i = 0; i < split_cmd.size(); i++)
             {
-                sumCommand[0] = nullptr;
-                // return sumCommand;
+                if (split_cmd[i] != "")
+                {
+                    std::cout << "!cmd_split !" << split_cmd[i] << "!\n";
+                }
             }
             
-            if(request.find(' ') != std::string::npos)
-            {
-                pos  = request.find(' ');
-                temp = request.substr(0,pos);
-                sumCommand.push_back(temp);
-                request.erase(0, request.find(' ')+1);
-            }
-            if(request.find(" :") != std::string::npos)
-            {
-                pos = request.find(" :");
-                std::cout << pos << "\n";
-                temp = request.substr(0,pos);
-                sumCommand.push_back(temp);
-                temp = request.substr(pos+2);
-                sumCommand.push_back(temp);
-                request.erase(request.begin()+pos, request.end());
-            }
-            else
-            {
-                sumCommand.push_back(request);
-            }
+            //  if(request.find((char)5) != std::string::npos)
+            //     request.erase(request.find((char)5));
+
+        
+            // std::vector<std::string>    sumCommand;
+            // std::string                 temp = "";
+            // std::size_t                 pos;
+
+            // if(request.find('\n') != std::string::npos)
+            //     request.erase(request.find('\n'));
+            // if(request.find('\r') != std::string::npos)
+            //     request.erase(request.find('\r'));
+            // while(!isalpha(request[0]) || request.empty())
+            // {
+            //     request.erase(0, 1);
+            // }
+
+            // if(request.empty())
+            // {
+            //     sumCommand[0] = nullptr;
+            //     // return sumCommand;
+            // }
+            
+            // if(request.find(' ') != std::string::npos)
+            // {
+            //     pos  = request.find(' ');
+            //     temp = request.substr(0,pos);
+            //     sumCommand.push_back(temp);
+            //     request.erase(0, request.find(' ')+1);
+            // }
+            // if(request.find(" :") != std::string::npos)
+            // {
+            //     pos = request.find(" :");
+            //     std::cout << pos << "\n";
+            //     temp = request.substr(0,pos);
+            //     sumCommand.push_back(temp);
+            //     temp = request.substr(pos+2);
+            //     sumCommand.push_back(temp);
+            //     request.erase(request.begin()+pos, request.end());
+            // }
+            // else
+            // {
+            //     sumCommand.push_back(request);
+            // }
             
             
            
-            // if(sumCommand[0].find("PASS") != std::string::npos)
-            //     std::cout << "111COMPLETE111\n";
-            //std::cout << "\\" + sumCommand[0] << '\n';
-            //std::cout << "\\\\" + sumCommand[1] << '\n';
+            // // if(sumCommand[0].find("PASS") != std::string::npos)
+            // //     std::cout << "111COMPLETE111\n";
+            // //std::cout << "\\" + sumCommand[0] << '\n';
+            // //std::cout << "\\\\" + sumCommand[1] << '\n';
 
 
-            std::cout << "comands:\n";
+            // std::cout << "comands:\n";
 
-            if (sumCommand[0] == "USER")
-            {
-                std::cout << "pass complete\n";
-            }
-            std::cout << sumCommand[0] + "\n";
-            std::cout << "len: " << sumCommand[0].size() << "\n";
-            if (sumCommand.size() > 1)
-                std::cout << sumCommand[1] + "\n";
+            // if (sumCommand[0] == "USER")
+            // {
+            //     std::cout << "pass complete\n";
+            // }
+            // std::cout << sumCommand[0] + "\n";
+            // std::cout << "len: " << sumCommand[0].size() << "\n";
+            // if (sumCommand.size() > 1)
+            //     std::cout << sumCommand[1] + "\n";
 
-            std::cout << "\n\n";
+            // std::cout << "\n\n";
 
             // std::vector<std::string> res_split =  split(request, " ");
 
@@ -224,9 +248,58 @@ class IrcServer
 
         }
         
+
+        std::vector<std::string> splitCommand(std::string &request)
+        {
+            std::vector<std::string>    sumCommand;
+            std::string                 temp = "";
+            std::size_t                 pos;
+
+            if(request.find('\n') != std::string::npos)
+                request.erase(request.find('\n'));
+            if(request.find('\r') != std::string::npos)
+                request.erase(request.find('\r'));
+            
+            while(!isalpha(request[0]) || request.empty())
+            {
+                request.erase(0, 1);
+            }
+            
+            if(request.empty())
+            {
+                sumCommand[0] = nullptr;
+                return sumCommand;
+            }
+            
+            if(request.find(' ') != std::string::npos)
+            {
+                pos  = request.find(' ');
+                temp = request.substr(0,pos);
+                sumCommand.push_back(temp);
+                request.erase(0, request.find(' ')+1);
+            }
+            if(request.find(" :") != std::string::npos)
+            {
+                pos = request.find(" :");
+                temp = request.substr(0,pos);
+                sumCommand.push_back(temp);
+                temp = request.substr(pos+2);
+                sumCommand.push_back(temp);
+                request.erase(request.begin()+pos, request.end());
+            }
+            else
+            {
+                sumCommand.push_back(request);
+            }
+            return sumCommand;
+        }
+
+
+
         std::vector<std::string> split(std::string str, std::string const sep)
         {
             std::vector<std::string> result;
+
             if (str.find(sep) == std::string::npos)
                 result.push_back(str);
 

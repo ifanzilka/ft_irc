@@ -178,7 +178,7 @@ int	ServerPoll::WaitEvent()
 	{
 		Logger(RED, "TimeOut 🕐 ");
 	}
-		return (result);
+	return (result);
 }
 
 
@@ -255,6 +255,7 @@ int		ServerPoll::CheckDisconnect()
 		RemoveClient(it->fd);
 		close(it->fd);
 		_pollfds.erase(it);
+		return (fd_read);
 	}
 	return (res);
 }
@@ -302,6 +303,7 @@ int		ServerPoll::CheckAndRead()
 	if (res == 1)
 	{
 		AbstractServerApi::SendInFd(fd_read, std::string("Sucsess in read\n"));
+		return (fd_read);
 	}
 	return (res);
 }

@@ -55,7 +55,7 @@ int main(int argc, char **argv)
                 continue;
 
             res = serv.CheckAndRead();
-            if (res == 1)
+            if (res > 1)
             {
                 serv.ParseMessage();
             }
