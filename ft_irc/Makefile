@@ -6,7 +6,7 @@
 #    By: ifanzilka <ifanzilka@student.42.fr>        +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2022/07/17 21:11:43 by ifanzilka         #+#    #+#              #
-#    Updated: 2022/09/07 01:51:52 by ifanzilka        ###   ########.fr        #
+#    Updated: 2022/09/24 05:32:13 by ifanzilka        ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -22,7 +22,7 @@ CPPFLAGS = -Wall -Wextra -Werror #-std=c++98
 
 INCLUDES = includes
 
-SRCS = srcs/ServerApi.cpp
+SRCS = srcs/ServerApi.cpp srcs/IrcServer.cpp srcs/utility.cpp
 
 SELECT_SRCS = srcs/ServerSelect.cpp
 
@@ -33,6 +33,7 @@ EPOLL_SRCS = srcs/ServerEpoll.cpp
 KQUEUE_SRCS = srcs/ServerKqueue.cpp
 
 MAIN_TEST = srcs/MainServerApi.cpp
+
 
 
 

@@ -232,8 +232,6 @@ int AbstractServerApi::SendInFd(int fd, const char *msg, size_t size)
 /* Add */
 void 	AbstractServerApi::AddClient(int fd_client, sockaddr_in addrinfo_client, std::string server_ipaddr)
 {
-	//Client   new_client(int fd_client, sockaddr_in addrinfo_client, std::string server_ipaddr);
-	//Client   *new_client = new Client (fd_client, addrinfo_client, server_ipaddr);
 	ClientIrc *new_client =  new ClientIrc (fd_client, addrinfo_client, server_ipaddr);
 
 	_Clients.push_back(new_client);
@@ -277,6 +275,24 @@ std::string	AbstractServerApi::GetHostName()
 int	AbstractServerApi::GetPort()
 {
     return (_port);
+}
+
+ClientIrc* AbstractServerApi::GetClientFromFd(int fd)
+{
+	std::vector<ClientIrc*>::iterator iter_begin = _Clients.begin();
+	std::vector<ClientIrc*>::iterator iter_end = _Clients.end();
+
+	while (iter_begin < iter_end)
+	{
+		//std::cout << "Fd: " << (*iter_begin)->getFd() << std::endl;
+		if (fd == (*iter_begin)->getFd())
+		{
+			return ((*iter_begin));
+			//std::cout << "Fd Finded!: " << (*iter_begin)->getFd() << std::endl;
+		}
+		iter_begin++;
+	}
+	return (NULL);
 }
 
 /*

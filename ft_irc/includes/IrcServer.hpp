@@ -5,7 +5,7 @@
 #include <ServerSelect.hpp>
 #include <ServerKqueue.hpp>
 #include <ServerEpoll.hpp>
-
+#include "utility.hpp"
 
 // #define SELECT  0
 // #define POLL    1
@@ -17,33 +17,16 @@
 class IrcServer
 {
     public:
-        
 
         /* Constructors */
-        IrcServer(int port, std::string password)
-        {
-            std::string tmp = "127.0.0.1";
-            
-            IrcServer::InitIRC(password, tmp, port);
-        }
+        IrcServer(int port, std::string password);
 
-		IrcServer(std::string &ipaddr, int port, std::string password)
-        {
-            IrcServer::InitIRC(password, ipaddr, port);
-        }
+		IrcServer(std::string &ipaddr, int port, std::string password);
 
-		IrcServer(const char *ipaddr, int port,std::string password)
-        {
-            std::string tmp = std::string(ipaddr);;
-
-            IrcServer::InitIRC(password, tmp, port);
-        }
+		IrcServer(const char *ipaddr, int port,std::string password);
 
         /* Destructor */
-        ~IrcServer()
-        {
-            delete _MainServer;
-        }
+        ~IrcServer();
 
         /* Function Main Server */
 
@@ -80,13 +63,37 @@ class IrcServer
             return (res_return);
         }
 
+        bool CheckPassword(std::string &str)
+        {
+            if (_pass == str)
+                return (true);
+            return (false);
+        }
+
+        void ChangeClientStatus(int fd)
+        {
+            ClientIrc* clinet = _MainServer->GetClientFromFd(fd);
+
+            if (clinet != NULL)
+            {
+                clinet->ChangeStatusConnect();
+            }
+        }
+
+        // void FindClientFromFd(int fd)
+        // {
+        //     _Clients
+
+        // }
 
         //std::map<int , Client>;
 
-
+        //мы спарсили пароль по нужному fd
+        //теперь ищем клиента по fd
 
         void ParseMessage()
         {
+            
             std::cout << "parse msg\n";
             //_MainServer->_msg = " ";
 
@@ -104,26 +111,39 @@ class IrcServer
             // }
             // std::cout << _MainServer->_msg << std::endl;
 
-            std::vector<std::string> res = split(_MainServer->_msg, DELIMETER_COMAND);
-            std::vector<std::string> res_cmd;
+            std::vector<std::string> comands = ut::split(_MainServer->_msg, DELIMETER_COMAND); 
+            std::vector<std::string> arguments;
 
-            for (unsigned int i = 0; i < res.size(); i++)
+            for (unsigned int i = 0; i < comands.size(); i++)
             {
-                if (res[i] != "")
+                if (comands[i] != "")
                 {
-                    std::cout << "!Check comand: !" << res[i] << "!\n";
-                    std::vector<std::string> res_cmd = splitCommand(res[i]);
-                    for (unsigned int j = 0; j < res_cmd.size(); j++)
+
+                    /* Очищаю от \r\n */
+                    
+                    if(comands[i].find('\n') != std::string::npos)
+                        comands[i].erase(comands[i].find('\n'));
+                    if(comands[i].find('\r') != std::string::npos)
+                        comands[i].erase(comands[i].find('\r'));
+
+                    std::cout << "!Check comand: !" << comands[i] << "!\n";
+                    std::vector<std::string> arguments = ut::splitForCmd(comands[i]);
+                    std::cout << arguments.size() << std::endl;
+                    
+                    for (unsigned int j = 0; j < arguments.size(); j++)
                     {
-                        if (res[i] != "")
+                        if (arguments[i] != "")
                         {
-                            std::cout << "!cmds: !" << res_cmd[j] << "!\n";
+                            std::cout << "!cmds: !" << arguments[j] << "!\n";
 
-                            //CheckCommand(res[i]);
-                            
+                            //CheckCommand(res[i]);   
                         }
-
                     }
+
+                    // if (_commands.find(arguments[0]) != _commands.end())
+                    // {
+                    //     (this->*_commands[arguments[0]])(arguments, client_socket);
+                    // }
 
                     //CheckCommand(res[i]);
                     
@@ -141,9 +161,13 @@ class IrcServer
                 request.erase(request.find('\n'));
             if(request.find('\r') != std::string::npos)
                 request.erase(request.find('\r'));
+
+            while (request.find(' ') != std::string::npos)
+                request.erase(request.find(' '));
+
             
 
-            split_cmd = split(request, " ");
+            split_cmd = ut::split(request, " ");
 
             for (unsigned int i = 0; i < split_cmd.size(); i++)
             {
@@ -152,210 +176,29 @@ class IrcServer
                     std::cout << "!cmd_split !" << split_cmd[i] << "!\n";
                 }
             }
-            
-            //  if(request.find((char)5) != std::string::npos)
-            //     request.erase(request.find((char)5));
+        }
 
         
-            // std::vector<std::string>    sumCommand;
-            // std::string                 temp = "";
-            // std::size_t                 pos;
-
-            // if(request.find('\n') != std::string::npos)
-            //     request.erase(request.find('\n'));
-            // if(request.find('\r') != std::string::npos)
-            //     request.erase(request.find('\r'));
-            // while(!isalpha(request[0]) || request.empty())
-            // {
-            //     request.erase(0, 1);
-            // }
-
-            // if(request.empty())
-            // {
-            //     sumCommand[0] = nullptr;
-            //     // return sumCommand;
-            // }
-            
-            // if(request.find(' ') != std::string::npos)
-            // {
-            //     pos  = request.find(' ');
-            //     temp = request.substr(0,pos);
-            //     sumCommand.push_back(temp);
-            //     request.erase(0, request.find(' ')+1);
-            // }
-            // if(request.find(" :") != std::string::npos)
-            // {
-            //     pos = request.find(" :");
-            //     std::cout << pos << "\n";
-            //     temp = request.substr(0,pos);
-            //     sumCommand.push_back(temp);
-            //     temp = request.substr(pos+2);
-            //     sumCommand.push_back(temp);
-            //     request.erase(request.begin()+pos, request.end());
-            // }
-            // else
-            // {
-            //     sumCommand.push_back(request);
-            // }
-            
-            
-           
-            // // if(sumCommand[0].find("PASS") != std::string::npos)
-            // //     std::cout << "111COMPLETE111\n";
-            // //std::cout << "\\" + sumCommand[0] << '\n';
-            // //std::cout << "\\\\" + sumCommand[1] << '\n';
+    void	pass(std::vector<std::string>, int)
+    {
 
 
-            // std::cout << "comands:\n";
-
-            // if (sumCommand[0] == "USER")
-            // {
-            //     std::cout << "pass complete\n";
-            // }
-            // std::cout << sumCommand[0] + "\n";
-            // std::cout << "len: " << sumCommand[0].size() << "\n";
-            // if (sumCommand.size() > 1)
-            //     std::cout << sumCommand[1] + "\n";
-
-            // std::cout << "\n\n";
-
-            // std::vector<std::string> res_split =  split(request, " ");
-
-            // std::cout << "!" << res_split[0] << "!\n";
-            // std::cout << "!" << res_split[1] << "!\n\n";
-
-            // std::cout << "!" << res_split[0][0] << "!\n";
-            // std::cout << "!" << res_split[0][1] << (int)res_split[0][1] <<"!\n";
-            // std::cout << "!" << res_split[0][2] << "!\n";
-            // std::cout << "!" << res_split[0][3] << "!\n";
-            // std::cout << "!" << res_split[0][4] << "!\n";
-            // std::cout << "!" << res_split[0].size() << "!\n";
-
-
-            // // std::cout << "LEN: " << str.size() << std::endl;
-
-            // if (res_split[0] == "PASS")
-            // {
-            //     std::cout << "Pass: " << split(request, " ")[1] << std::endl;
-            // }
-
-            // std::size_t found = request.find("PASS");
-            // if (found != std::string::npos)
-            // {
-            //     std::cout << "Pass: " << split(request, ":")[1] << std::endl;
-            // }
-
-
-        }
-        
-
-        std::vector<std::string> splitCommand(std::string &request)
-        {
-            std::vector<std::string>    sumCommand;
-            std::string                 temp = "";
-            std::size_t                 pos;
-
-            if(request.find('\n') != std::string::npos)
-                request.erase(request.find('\n'));
-            if(request.find('\r') != std::string::npos)
-                request.erase(request.find('\r'));
-            
-            while(!isalpha(request[0]) || request.empty())
-            {
-                request.erase(0, 1);
-            }
-            
-            if(request.empty())
-            {
-                sumCommand[0] = nullptr;
-                return sumCommand;
-            }
-            
-            if(request.find(' ') != std::string::npos)
-            {
-                pos  = request.find(' ');
-                temp = request.substr(0,pos);
-                sumCommand.push_back(temp);
-                request.erase(0, request.find(' ')+1);
-            }
-            if(request.find(" :") != std::string::npos)
-            {
-                pos = request.find(" :");
-                temp = request.substr(0,pos);
-                sumCommand.push_back(temp);
-                temp = request.substr(pos+2);
-                sumCommand.push_back(temp);
-                request.erase(request.begin()+pos, request.end());
-            }
-            else
-            {
-                sumCommand.push_back(request);
-            }
-            return sumCommand;
-        }
-
-
-
-        std::vector<std::string> split(std::string str, std::string const sep)
-        {
-            std::vector<std::string> result;
-
-            if (str.find(sep) == std::string::npos)
-                result.push_back(str);
-
-            while (str.find(sep) != std::string::npos)
-            {
-                if (str.find(sep) == 0)
-                {
-                    str.erase(0);
-                    continue;
-                }
-                else
-                    result.push_back(str.substr(0, str.find(sep)));
-                str.erase(0, str.find(sep) + 1);
-                if ((str.find(sep) == std::string::npos))
-                {
-                    result.push_back(str);
-                    break;
-                }
-            }
-            return result;
-        }
-
+    }
 
     protected:
+        /* Делаю сокращение */
+        typedef	void (IrcServer::*commandPtr)(std::vector<std::string>, int);
+        std::map<std::string, commandPtr>   _commands;
+
+
         AbstractServerApi *_MainServer;
         std::string        _pass;
         std::string        _pass_hash;
 
     private:
 
-        void InitIRC(std::string password, std::string ipaddr, int port)
-        {
-
-            // _MainServer = new ServerSelect(ipaddr, port);
-            //_MainServer = new ServerPoll(ipaddr, port);
-            // _MainServer = new ServerKqueue(ipaddr, port);
-            // _MainServer = new ServerEpoll(ipaddr, port);
-
-            #if defined(SELECT)
-                _MainServer = new ServerSelect(ipaddr, port);
-                _MainServer->Logger(GREEN, std::string("Server Type Select"));
-            #elif defined(POLL)
-                _MainServer = new ServerPoll(ipaddr, port);
-                _MainServer->Logger(GREEN, std::string("Server Type Poll"));
-            #elif defined(EPOLL)
-                _MainServer = new ServerEpoll(ipaddr, port);
-                _MainServer->Logger(GREEN, std::string("Server Type Epoll"));
-            #else
-                _MainServer = new ServerKqueue(ipaddr, port);
-                _MainServer->Logger(GREEN, std::string("Server Type Kqueue"));
-            #endif
-
-            
-        
-            _pass = password;
-        }
+        void InitComands();
+        void InitIRC(std::string password, std::string ipaddr, int port);
 
 
 };
