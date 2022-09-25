@@ -166,6 +166,10 @@ int	ServerPoll::WaitEvent()
 	int result;
 	int timeout = -1;
 
+	_last_iter_connect = 0;
+	_last_iter_read = 0;
+	_last_iter_disconnect = 0;
+
 	/* Массив дискрипторов и размер его*/
 	result = poll(& _pollfds[0], _pollfds.size(), timeout);
 	Logger(B_GRAY, "Poll return " + std::to_string(result));

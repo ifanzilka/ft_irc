@@ -104,3 +104,23 @@ std::vector<std::string> ut::splitForCmd(std::string &request)
     }
     return arguments;
 }
+
+static int	ft_isspace(char c)
+{
+	if (c == '\t' || c == '\v' || c == '\f' || c == '\r' ||
+			c == '\n' || c == ' ')
+		return (1);
+	return (0);
+}
+
+
+/* Удаление пробелов в начале  */
+
+std::string ut::ProcessingStr(std::string &str)
+{
+
+     while(ft_isspace(str[0]))
+            str.erase(0, 1);
+            
+    return (str);
+}

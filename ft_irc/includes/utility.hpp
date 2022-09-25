@@ -13,4 +13,5 @@ namespace ut
     std::vector<std::string> split(std::string str, std::string const sep);
     std::vector<std::string> splitCommand(std::string &request);
     std::vector<std::string> splitForCmd(std::string &request);
+    std::string              ProcessingStr(std::string &str);
 }

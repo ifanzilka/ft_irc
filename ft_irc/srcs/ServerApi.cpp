@@ -253,6 +253,7 @@ void 	AbstractServerApi::RemoveClient(int fd_client)
 		{
 			delete *it;
 			_Clients.erase(it);
+			Logger(B_GRAY, "Delete fd okay");
 			break;
 		}
 

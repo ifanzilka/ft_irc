@@ -56,11 +56,13 @@ class IrcServer
 
         int CheckAndRead()
         {
-            int res_return;
+            int fd;
 
-            res_return = _MainServer->CheckAndRead();
-            std::cout << "res_return: " << res_return << std::endl; 
-            return (res_return);
+            fd = _MainServer->CheckAndRead();
+
+
+            std::cout << "res_return: " << fd << std::endl; 
+            return (fd);
         }
 
         bool CheckPassword(std::string &str)
@@ -91,25 +93,11 @@ class IrcServer
         //мы спарсили пароль по нужному fd
         //теперь ищем клиента по fd
 
-        void ParseMessage()
+        void ParseMessage(int fd)
         {
             
             std::cout << "parse msg\n";
-            //_MainServer->_msg = " ";
-
-
-
-            // size_t pos = 0;
-            // std::string token;
-            // while ((pos = _MainServer->_msg.find(DELIMETER_COMAND)) != std::string::npos)
-            // {
-            //     token = _MainServer->_msg.substr(0, pos);
-            //     //std::cout << token << std::endl;
-            //     CheckCommand(token);
-                
-            //     _MainServer->_msg.erase(0, pos + 1);
-            // }
-            // std::cout << _MainServer->_msg << std::endl;
+    
 
             std::vector<std::string> comands = ut::split(_MainServer->_msg, DELIMETER_COMAND); 
             std::vector<std::string> arguments;
@@ -118,72 +106,38 @@ class IrcServer
             {
                 if (comands[i] != "")
                 {
-
-                    /* Очищаю от \r\n */
+                    ut::ProcessingStr(comands[i]);
                     
-                    if(comands[i].find('\n') != std::string::npos)
-                        comands[i].erase(comands[i].find('\n'));
-                    if(comands[i].find('\r') != std::string::npos)
-                        comands[i].erase(comands[i].find('\r'));
-
-                    std::cout << "!Check comand: !" << comands[i] << "!\n";
                     std::vector<std::string> arguments = ut::splitForCmd(comands[i]);
-                    std::cout << arguments.size() << std::endl;
-                    
-                    for (unsigned int j = 0; j < arguments.size(); j++)
-                    {
-                        if (arguments[i] != "")
-                        {
-                            std::cout << "!cmds: !" << arguments[j] << "!\n";
+                    fd--;
+                    //MakeComand(arguments, fd);
 
-                            //CheckCommand(res[i]);   
-                        }
-                    }
-
-                    // if (_commands.find(arguments[0]) != _commands.end())
-                    // {
-                    //     (this->*_commands[arguments[0]])(arguments, client_socket);
-                    // }
-
-                    //CheckCommand(res[i]);
-                    
                 }
 
             }
             _MainServer->_msg = "";
         }
 
-        void CheckCommand(std::string &request)
+        void    MakeComand(std::vector<std::string> &arguments, int fd)
         {
-            std::vector<std::string> split_cmd;
-
-            if(request.find('\n') != std::string::npos)
-                request.erase(request.find('\n'));
-            if(request.find('\r') != std::string::npos)
-                request.erase(request.find('\r'));
-
-            while (request.find(' ') != std::string::npos)
-                request.erase(request.find(' '));
-
-            
-
-            split_cmd = ut::split(request, " ");
-
-            for (unsigned int i = 0; i < split_cmd.size(); i++)
+            if (_commands.find(arguments[0]) != _commands.end())
             {
-                if (split_cmd[i] != "")
-                {
-                    std::cout << "!cmd_split !" << split_cmd[i] << "!\n";
-                }
+                (this->*_commands[arguments[0]])(arguments, fd);
             }
         }
 
+        // void EndCicle()
+        // {
         
-    void	pass(std::vector<std::string>, int)
-    {
-
-
-    }
+        //     _MainServer->
+        // }
+        
+            
+        void	pass(std::vector<std::string>, int)
+        {
+            std::cout << "This is pass" << std::endl;
+        
+        }
 
     protected:
         /* Делаю сокращение */
