@@ -6,6 +6,7 @@
 #include <ServerKqueue.hpp>
 #include <ServerEpoll.hpp>
 #include "utility.hpp"
+#include "IrcServerProtocol.hpp"
 
 // #define SELECT  0
 // #define POLL    1
@@ -60,8 +61,7 @@ class IrcServer
 
             fd = _MainServer->CheckAndRead();
 
-
-            std::cout << "res_return: " << fd << std::endl; 
+            _MainServer->Logger(B_GRAY, "Read in " + std::to_string(fd) + " fd");
             return (fd);
         }
 
@@ -79,26 +79,15 @@ class IrcServer
             if (clinet != NULL)
             {
                 clinet->ChangeStatusConnect();
+                _MainServer->Logger(GREEN, "Status client is changed");
             }
         }
 
-        // void FindClientFromFd(int fd)
-        // {
-        //     _Clients
-
-        // }
-
-        //std::map<int , Client>;
-
-        //мы спарсили пароль по нужному fd
-        //теперь ищем клиента по fd
 
         void ParseMessage(int fd)
         {
-            
-            std::cout << "parse msg\n";
+            _MainServer->Logger(B_GRAY, "Parse msg...");
     
-
             std::vector<std::string> comands = ut::split(_MainServer->_msg, DELIMETER_COMAND); 
             std::vector<std::string> arguments;
 
@@ -109,8 +98,7 @@ class IrcServer
                     ut::ProcessingStr(comands[i]);
                     
                     std::vector<std::string> arguments = ut::splitForCmd(comands[i]);
-                    fd--;
-                    //MakeComand(arguments, fd);
+                    MakeComand(arguments, fd);
 
                 }
 
@@ -126,26 +114,34 @@ class IrcServer
             }
         }
 
-        // void EndCicle()
-        // {
-        
-        //     _MainServer->
-        // }
-        
-            
-        void	pass(std::vector<std::string>, int)
+                
+        void	pass(std::vector<std::string> arguments, int fd)
         {
-            std::cout << "This is pass" << std::endl;
+            _MainServer->Logger(PURPLE, "Make command pass");
+
+            if (arguments.size() > 1)
+            {
+                if (arguments[1] == _pass)
+                {
+                    _MainServer->Logger(GREEN, "Successfully password!");
+                    ChangeClientStatus(fd);
+
+                    //RPL_WELCOME("ifanzilka");
+                    _MainServer->SendInFd(fd, RPL_WELCOME(std::string("ifanzilka")));
+                    _MainServer->SendInFd(fd, RPL_MOTDSTART(std::string("ifanzilka")));
+                    _MainServer->SendInFd(fd, RPL_MOTD(std::string("ifanzilka"), "hi"));
+                }
+            }
         
         }
-
+        
     protected:
         /* Делаю сокращение */
         typedef	void (IrcServer::*commandPtr)(std::vector<std::string>, int);
         std::map<std::string, commandPtr>   _commands;
 
 
-        AbstractServerApi *_MainServer;
+        AbstractServerApi *_MainServer; 
         std::string        _pass;
         std::string        _pass_hash;
 

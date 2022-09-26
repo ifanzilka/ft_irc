@@ -6,7 +6,7 @@
 /*   By: ifanzilka <ifanzilka@student.42.fr>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/04/14 00:49:56 by bmarilli          #+#    #+#             */
-/*   Updated: 2022/09/24 03:02:21 by ifanzilka        ###   ########.fr       */
+/*   Updated: 2022/09/26 03:13:33 by ifanzilka        ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -96,15 +96,17 @@ class AbstractServerApi
 		int 				_last_iter_disconnect;
 		int 				_last_iter_read;
 
-
+	public:
 		/* Говорю что можно переопределить */
 		virtual	void		Init(std::string& ipaddr, int port);
+		virtual	void		InitVariable();
 		virtual int 		Create_socket();
 		virtual int 		Binded();
 		virtual int 		Listen();
 		virtual	int 		Accept();
 		virtual	int 		ReadInFd(int fd);
 		virtual	int 		SendInFd(int fd, std::string msg);
+		virtual	int 		SendInFd(int fd, const char *msg);
 		virtual	int			SendInFd(int fd, const char *msg, size_t size);
 
 

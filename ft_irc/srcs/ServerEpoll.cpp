@@ -137,9 +137,7 @@ int		ServerEpoll::WaitEvent()
 
 	timeout = -1;
 	_new_events = epoll_wait(_epfd, _events, EPOLL_SIZE, timeout);
-	_last_iter_connect = 0;
-	_last_iter_read = 0;
-	_last_iter_disconnect = 0;
+	InitVariable();
 
 	if (_new_events == -1)
 	{

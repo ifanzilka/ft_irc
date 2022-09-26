@@ -89,6 +89,15 @@ int AbstractServerApi::Listen()
 }
 
 
+void	AbstractServerApi::InitVariable()
+{
+	_last_iter_connect = 0;
+	_last_iter_read = 0;
+	_last_iter_disconnect = 0;
+	
+}
+
+
 /*
 **	MAIN FUNCTIONAL
 */
@@ -162,15 +171,21 @@ int AbstractServerApi::ReadInFd(int fd)
 			// Logger(B_GRAY, "subbuf:!"+ std::string(buffer) + std::string("!"));
 			
 		}
-
-			Logger(GREEN, "Data is read is " + std::to_string(_msg.size()) + " bytes  ✅ ");
-			Logger(B_GRAY, _msg);
+		Logger(GREEN, "Read in  " + std::to_string(fd) + " fd");
+		Logger(GREEN, "Data is read is " + std::to_string(_msg.size()) + " bytes  ✅ ");
+		Logger(B_GRAY, "\n" + _msg);
 			//_msg = ""; 
 			
 			//AbstractServerApi::SendInFd(fd, "Message Sucsefull\n", 18);
 			//send(fd, "Message Sucsefull", 17, 0);
 	}
 	return (1);
+}
+
+int AbstractServerApi::SendInFd(int fd, const char *msg)
+{
+	std::string string_msg(msg);
+	return (this->SendInFd(fd, string_msg));
 }
 
 int AbstractServerApi::SendInFd(int fd, std::string msg)
@@ -194,6 +209,11 @@ int AbstractServerApi::SendInFd(int fd, std::string msg)
 		c_msg += res_send;
 
 	}
+	std::cout << B_GRAY;
+	std::cout << msg << std::endl; 
+	std::cout << NORM;
+	//Logger(PURPLE, "Server sended:\n");
+	//Logger(B_GRAY, msg);
 	return (0);
 }
 
