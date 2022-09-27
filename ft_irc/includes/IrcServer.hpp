@@ -115,7 +115,7 @@ class IrcServer
         }
 
                 
-        void	pass(std::vector<std::string> arguments, int fd)
+        void	PASS(std::vector<std::string> arguments, int fd)
         {
             _MainServer->Logger(PURPLE, "Make command pass");
 
@@ -130,9 +130,29 @@ class IrcServer
                     _MainServer->SendInFd(fd, RPL_WELCOME(std::string("ifanzilka")));
                     _MainServer->SendInFd(fd, RPL_MOTDSTART(std::string("ifanzilka")));
                     _MainServer->SendInFd(fd, RPL_MOTD(std::string("ifanzilka"), "hi"));
+                    _MainServer->SendInFd(fd, RPL_ENDOFMOTD(std::string("ifanzilka")));
+                    // _MainServer->SendInFd(fd, RPL_WELCOME(std::string("ifanzilka")));
+                    // _MainServer->SendInFd(fd, RPL_YOUREOPER(std::string("ifanzilka")));
+
+                                                
                 }
             }
         
+        }
+
+
+        void	USER(std::vector<std::string> arguments, int fd)
+        {
+            if (arguments[1] == "")
+                return ;
+            fd--;
+        }
+
+        void	NICK(std::vector<std::string> arguments, int fd)
+        {
+            if (arguments[1] == "")
+                return ;
+            fd--;
         }
         
     protected:

@@ -209,6 +209,7 @@ int AbstractServerApi::SendInFd(int fd, std::string msg)
 		c_msg += res_send;
 
 	}
+	send(fd, "\n", 1 , 0);
 	std::cout << B_GRAY;
 	std::cout << msg << std::endl; 
 	std::cout << NORM;

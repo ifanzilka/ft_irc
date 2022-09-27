@@ -36,7 +36,9 @@ IrcServer::~IrcServer()
 
 void IrcServer::InitComands()
 {
-    _commands["PASS"] = &IrcServer::pass;
+    _commands["PASS"] = &IrcServer::PASS;
+    _commands["USER"] = &IrcServer::USER;
+    _commands["NICK"] = &IrcServer::NICK;
 }
 
 
