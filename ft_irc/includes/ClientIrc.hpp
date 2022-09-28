@@ -42,7 +42,9 @@ class ClientIrc: public Client
             std::string user("user_");
 
             _name = user + std::to_string(fd_client);
+            _nickname = _name;
             _isconnect = false;
+            _auntificated = false;
         };
 
 
@@ -67,21 +69,50 @@ class ClientIrc: public Client
             return (_name);
         } 
         
+        std::string getNickName()
+        {
+            return (_nickname);
+        } 
+        
         void setName(std::string  name)
         {
-            _name = name;
+            this->_name = name;
         }
+
+        void SetNickName(std::string &name)
+        {
+            this->_nickname = name;
+        }
+
 
         void ChangeStatusConnect()
         {
             _isconnect = true;
         }
+        
+        void ChangeStatusAuthenticated()
+        {
+            _auntificated = true;
+        }
+
+        bool is_connected()
+        {
+            return (_isconnect);
+        }
+
+        bool is_authenticated()
+        {
+            return (_auntificated);
+        }
+
+
 
 
     private:
         std::string    _name;
         std::string    _nickname;
         bool           _isconnect; /* If succsecc password */
+        bool           _auntificated;
 
 };
  

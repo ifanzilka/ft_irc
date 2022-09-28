@@ -40,6 +40,8 @@ int main(int argc, char **argv)
         //     serv.CheckAndRead();
         // }
 
+        serv.Start();
+
         int events;
         int res;
         while (1)

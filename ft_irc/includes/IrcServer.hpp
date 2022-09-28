@@ -31,39 +31,12 @@ class IrcServer
 
         /* Function Main Server */
 
-        int WaitEvent()
-        {
-            int res_return;
+        int     WaitEvent();
+        int     CheckConnect();
+        int     CheckDisconnect();
+        int     CheckAndRead();
+        void    Start();
 
-            res_return = _MainServer->WaitEvent();
-            return (res_return);
-        }
-
-        int CheckConnect()
-        {
-            int res_return;
-
-            res_return = _MainServer->CheckConnect();
-            return (res_return);
-        }
-
-        int CheckDisconnect()
-        {
-            int res_return;
-
-            res_return = _MainServer->CheckDisconnect();
-            return (res_return);
-        }
-
-        int CheckAndRead()
-        {
-            int fd;
-
-            fd = _MainServer->CheckAndRead();
-
-            _MainServer->Logger(B_GRAY, "Read in " + std::to_string(fd) + " fd");
-            return (fd);
-        }
 
         bool CheckPassword(std::string &str)
         {
@@ -114,46 +87,30 @@ class IrcServer
             }
         }
 
-                
-        void	PASS(std::vector<std::string> arguments, int fd)
-        {
-            _MainServer->Logger(PURPLE, "Make command pass");
 
-            if (arguments.size() > 1)
+        Client*       FindClientrByNickname(const std::string& nickname)
+        {
+            
+            std::vector<ClientIrc*>::iterator iter_begin = _MainServer->_Clients.begin();
+	        std::vector<ClientIrc*>::iterator iter_end = _MainServer->_Clients.end();
+
+            while (iter_begin < iter_end)
             {
-                if (arguments[1] == _pass)
+                
+                if (nickname == (*iter_begin)->getNickName())
                 {
-                    _MainServer->Logger(GREEN, "Successfully password!");
-                    ChangeClientStatus(fd);
-
-                    //RPL_WELCOME("ifanzilka");
-                    _MainServer->SendInFd(fd, RPL_WELCOME(std::string("ifanzilka")));
-                    _MainServer->SendInFd(fd, RPL_MOTDSTART(std::string("ifanzilka")));
-                    _MainServer->SendInFd(fd, RPL_MOTD(std::string("ifanzilka"), "hi"));
-                    _MainServer->SendInFd(fd, RPL_ENDOFMOTD(std::string("ifanzilka")));
-                    // _MainServer->SendInFd(fd, RPL_WELCOME(std::string("ifanzilka")));
-                    // _MainServer->SendInFd(fd, RPL_YOUREOPER(std::string("ifanzilka")));
-
-                                                
+                    return ((*iter_begin));
                 }
+
+                iter_begin++;
             }
-        
+            return (NULL);
         }
 
-
-        void	USER(std::vector<std::string> arguments, int fd)
-        {
-            if (arguments[1] == "")
-                return ;
-            fd--;
-        }
-
-        void	NICK(std::vector<std::string> arguments, int fd)
-        {
-            if (arguments[1] == "")
-                return ;
-            fd--;
-        }
+        void    WelcomeUser(ClientIrc *client, int fd);
+        void	PASS(std::vector<std::string> arguments, int fd);
+        void	USER(std::vector<std::string> arguments, int fd);
+        void	NICK(std::vector<std::string> arguments, int fd);
         
     protected:
         /* Делаю сокращение */
