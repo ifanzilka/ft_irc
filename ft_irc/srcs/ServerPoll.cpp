@@ -304,7 +304,7 @@ int		ServerPoll::CheckAndRead()
 	res = AbstractServerApi::ReadInFd(fd_read);
 	if (res == 1)
 	{
-		AbstractServerApi::SendInFd(fd_read, std::string("Sucsess in read\n"));
+		//AbstractServerApi::SendInFd(fd_read, std::string("Sucsess in read\n"));
 		return (fd_read);
 	}
 	return (res);

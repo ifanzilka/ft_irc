@@ -25,4 +25,18 @@
 #define ERR_ERRONEUSNICKNAME(nickname, nick)            (":ircserv 432 " + (nickname) + ' ' + (nick) + " :Erroneus nickname")
 #define ERR_NICKNAMEINUSE(oldnickname, nickname)        (":ircserv 433 " + (oldnickname) + ' ' + (nickname) + " :Nickname is already in use")
 
+
+//__ERRORS_____________________________________________________
+#define ERR_NOSUCHNICK(nickname, nick)                  (":ircserv 401 " + (nickname) + ' ' + (nick) + " :No such nick/channel")
+#define ERR_NOSUCHCHANNEL(nickname, channel)            (":ircserv 403 " + (nickname) + ' ' + (channel) + " :No such channel")
+#define ERR_NOORIGIN(nickname)                          (":ircserv 409 " + (nickname) + " :No origin specified")
+#define ERR_CANNOTSENDTOCHAN(channel)                   (":ircserv 404 " + (channel) + " :Cannot send to channel")
+#define ERR_WASNOSUCHNICK(channel)                      (":ircserv 406 " + (channel) + " :There was no such nickname")
+#define ERR_TOOMANYTARGETS(nickname, target)            (":ircserv 407 " + (nickname) + ' ' + (target) + " :Duplicate recipients. No message delivered")
+#define ERR_UNKNOWNCOMMAND(nickname, command)           (":ircserv 421 " + (nickname) + ' ' + (command) + " :Unknown command")
+#define ERR_CHANOPRIVSNEEDED(nickname, channel)         (":ircserv 482 " + (nickname) + ' ' + (channel) + " :You're not channel operator")
+
+
+#define RPL_QUIT(nickname, message)                     (":ircserv " + (nickname) + " quited :" + (message))
+
 #endif

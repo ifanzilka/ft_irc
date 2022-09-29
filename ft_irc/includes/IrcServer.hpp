@@ -111,6 +111,8 @@ class IrcServer
         void	PASS(std::vector<std::string> arguments, int fd);
         void	USER(std::vector<std::string> arguments, int fd);
         void	NICK(std::vector<std::string> arguments, int fd);
+        void	QUIT(std::vector<std::string> arguments, int fd);
+        void	PING(std::vector<std::string> arguments, int fd);
         
     protected:
         /* Делаю сокращение */

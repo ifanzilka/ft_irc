@@ -39,6 +39,8 @@ void IrcServer::InitComands()
     _commands["PASS"] = &IrcServer::PASS;
     _commands["USER"] = &IrcServer::USER;
     _commands["NICK"] = &IrcServer::NICK;
+    _commands["QUIT"] = &IrcServer::QUIT;
+    _commands["PING"] = &IrcServer::PING;
 }
 
 

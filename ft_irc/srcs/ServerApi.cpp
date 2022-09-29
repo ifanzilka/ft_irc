@@ -197,6 +197,8 @@ int AbstractServerApi::SendInFd(int fd, std::string msg)
 	size_t 	len_msg = msg.size();
 	size_t  BUFFER_LEN = BUFFER_SIZE_SEND > len_msg ? len_msg : BUFFER_SIZE_SEND;
 
+	Logger(PURPLE, std::string("Attempt to send: "));
+	Logger(B_BLUE, msg);
 
 	while (sended < len_msg)
 	{
