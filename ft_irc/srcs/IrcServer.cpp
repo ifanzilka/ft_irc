@@ -41,6 +41,8 @@ void IrcServer::InitComands()
     _commands["NICK"] = &IrcServer::NICK;
     _commands["QUIT"] = &IrcServer::QUIT;
     _commands["PING"] = &IrcServer::PING;
+    _commands["AWAY"] = &IrcServer::AWAY;
+    _commands["PRIVMSG"] = &IrcServer::PRIVMSG;
 }
 
 
@@ -98,14 +100,37 @@ int IrcServer::CheckDisconnect()
 
 int IrcServer::CheckAndRead()
 {
-    int fd;
+    ClientIrc   *Client;
+    int         fd;
 
     fd = _MainServer->CheckAndRead();
-
-    _MainServer->Logger(B_GRAY, "Read in " + std::to_string(fd) + " fd");
+    if (fd > 1)
+    {
+        Client = _MainServer->GetClientFromFd(fd);
+        
+        if (Client != NULL)
+        {
+            _MainServer->Logger(B_GRAY, "\n[" + Client->getName() + "] " + _MainServer->_msg);
+        }
+        _MainServer->Logger(B_GRAY, "Read in " + std::to_string(fd) + " fd");
+    }
     return (fd);
 }
 
+int IrcServer::SendInFd(int fd, std::string msg)
+{
+    ClientIrc  *client;
+    int     res;
+
+    client = _MainServer->GetClientFromFd(fd);
+    if (client == NULL)
+        return (0);
+
+    _MainServer->Logger(PURPLE, std::string("[") + client->getNickName() + "] " + std::string("Attempt to send: "));
+	_MainServer->Logger(B_BLUE, msg);
+    res = _MainServer->SendInFd(fd, msg);
+    return (res);
+}
 
 void IrcServer::Start()
 {
@@ -147,6 +172,74 @@ void IrcServer::Start()
     
 }
 
+
+bool IrcServer::CheckPassword(std::string &str)
+{
+    if (_pass == str)
+        return (true);
+    return (false);
+}
+
+
+void  IrcServer::ChangeClientStatus(int fd)
+{
+    ClientIrc* clinet = _MainServer->GetClientFromFd(fd);
+
+    if (clinet != NULL)
+    {
+        clinet->ChangeStatusConnect();
+        _MainServer->Logger(GREEN, "Status client is changed");
+    }
+}
+
+void    IrcServer::ParseMessage(int fd)
+{
+    _MainServer->Logger(B_GRAY, "Parse msg...");
+
+    std::vector<std::string> comands = ut::split(_MainServer->_msg, DELIMETER_COMAND); 
+    std::vector<std::string> arguments;
+
+    for (unsigned int i = 0; i < comands.size(); i++)
+    {
+        if (comands[i] != "")
+        {
+            ut::ProcessingStr(comands[i]);
+            
+            std::vector<std::string> arguments = ut::splitForCmd(comands[i]);
+            MakeComand(arguments, fd);
+
+        }
+
+    }
+    _MainServer->_msg = "";
+}
+
+void    IrcServer::MakeComand(std::vector<std::string> &arguments, int fd)
+{
+    if (_commands.find(arguments[0]) != _commands.end())
+    {
+        (this->*_commands[arguments[0]])(arguments, fd);
+    }
+}
+
+Client*     IrcServer::FindClientrByNickname(const std::string& nickname)
+{
+    
+    std::vector<ClientIrc*>::iterator iter_begin = _MainServer->_Clients.begin();
+    std::vector<ClientIrc*>::iterator iter_end = _MainServer->_Clients.end();
+
+    while (iter_begin < iter_end)
+    {
+        
+        if (nickname == (*iter_begin)->getNickName())
+        {
+            return ((*iter_begin));
+        }
+
+        iter_begin++;
+    }
+    return (NULL);
+}
 
 
 # endif

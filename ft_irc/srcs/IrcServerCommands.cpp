@@ -21,7 +21,7 @@ void	IrcServer::PASS(std::vector<std::string> arguments, int fd)
     /* Если уже подключен */
     if (client->is_connected())
     {
-        _MainServer->SendInFd(fd, ERR_ALREADYREGISTRED(client->getNickName()));
+        this->SendInFd(fd, ERR_ALREADYREGISTRED(client->getNickName()));
     }
     else if (arguments.size() > 1)
     {
@@ -33,12 +33,12 @@ void	IrcServer::PASS(std::vector<std::string> arguments, int fd)
         }
         else
         {
-            _MainServer->SendInFd(fd, ERR_PASSWDMISMATCH(client->getNickName()));
+            this->SendInFd(fd, ERR_PASSWDMISMATCH(client->getNickName()));
         }
     }
     else
     {
-        _MainServer->SendInFd(fd, ERR_NEEDMOREPARAMS(client->getNickName(), std::string("PASS")));
+        this->SendInFd(fd, ERR_NEEDMOREPARAMS(client->getNickName(), std::string("PASS")));
     }
 
 }
@@ -61,7 +61,7 @@ void	IrcServer::USER(std::vector<std::string> arguments, int fd)
 
     if (!client->is_connected())
     {
-        _MainServer->SendInFd(fd, ERR_NOTREGISTERED(client->getNickName()));
+        this->SendInFd(fd, ERR_NOTREGISTERED(client->getNickName()));
     }
     else if (arguments.size() == 5)
     {
@@ -76,7 +76,7 @@ void	IrcServer::USER(std::vector<std::string> arguments, int fd)
         {
             if ((*start)->getName() == arguments[1])
             {
-                _MainServer->SendInFd(fd, ERR_ALREADYREGISTRED(client->getNickName()));
+                this->SendInFd(fd, ERR_ALREADYREGISTRED(client->getNickName()));
                 return;
             }
         }
@@ -90,7 +90,7 @@ void	IrcServer::USER(std::vector<std::string> arguments, int fd)
     }
     else
     {
-        _MainServer->SendInFd(fd, ERR_NEEDMOREPARAMS(client->getNickName(), std::string("PASS")));
+        this->SendInFd(fd, ERR_NEEDMOREPARAMS(client->getNickName(), std::string("PASS")));
     }
 
 }
@@ -99,11 +99,11 @@ void    IrcServer::WelcomeUser(ClientIrc *client, int fd)
 {
     std::string nickname = client->getNickName();
 
-    _MainServer->SendInFd(fd, RPL_MOTDSTART(nickname));
-    _MainServer->SendInFd(fd, RPL_MOTD(nickname, "hi"));
-    _MainServer->SendInFd(fd, RPL_ENDOFMOTD(nickname));
-    _MainServer->SendInFd(fd, RPL_WELCOME(nickname));
-    _MainServer->SendInFd(fd, RPL_YOUREOPER(nickname));         
+    this->SendInFd(fd, RPL_MOTDSTART(nickname));
+    this->SendInFd(fd, RPL_MOTD(nickname, "hi"));
+    this->SendInFd(fd, RPL_ENDOFMOTD(nickname));
+    this->SendInFd(fd, RPL_WELCOME(nickname));
+    this->SendInFd(fd, RPL_YOUREOPER(nickname));         
 
 }
 
@@ -126,18 +126,18 @@ void	IrcServer::NICK(std::vector<std::string> arguments, int fd)
 
     if (!client->is_connected())
     {
-        _MainServer->SendInFd(fd, ERR_NOTREGISTERED(client->getNickName()));
+        this->SendInFd(fd, ERR_NOTREGISTERED(client->getNickName()));
     }
 
     else if (arguments.size() < 2)
     {
-        _MainServer->SendInFd(fd, ERR_NONICKNAMEGIVEN(client->getNickName()));
+        this->SendInFd(fd, ERR_NONICKNAMEGIVEN(client->getNickName()));
 
     }
     else if (FindClientrByNickname(arguments[1]) != NULL)
     {
-        _MainServer->SendInFd(fd, ERR_NICKNAMEINUSE(client->getNickName(), arguments[1]));   
-    }/* Check valid Ncik*/
+        this->SendInFd(fd, ERR_NICKNAMEINUSE(client->getNickName(), arguments[1]));   
+    }/* Check valid Ncik*/ //to_do
     else
     {
         if (!client->is_authenticated())
@@ -172,7 +172,7 @@ void	IrcServer::QUIT(std::vector<std::string> arguments, int fd)
     _MainServer->Logger(PURPLE, "Make command QUIT");
 
     client = _MainServer->GetClientFromFd(fd);
-    _MainServer->SendInFd(fd, RPL_QUIT(client->getNickName(), arguments.size() > 1 ? arguments[1] : "silently"));
+    this->SendInFd(fd, RPL_QUIT(client->getNickName(), arguments.size() > 1 ? arguments[1] : "silently"));
 
 }
 
@@ -195,21 +195,167 @@ void	IrcServer::PING(std::vector<std::string> arguments, int fd)
 
     if (arguments.size() < 2)
     {
-         _MainServer->SendInFd(fd, ERR_NOORIGIN(client->getNickName()));
+        this->SendInFd(fd, ERR_NOORIGIN(client->getNickName()));
     }
     else
     {
-         _MainServer->SendInFd(fd, std::string("PONG ") + arguments[1] + std::string(" ") + client->getNickName());
+        this->SendInFd(fd, std::string("PONG ") + arguments[1] + std::string(" ") + client->getNickName());
     }
 
 }
 
 
-// void UsersService::ping(std::vector<std::string> args, int client_socket) {
-//     if (args.size() < 2) {
-//         _postman->sendReply(client_socket, ERR_NOORIGIN(_users[client_socket]->get_nickname()));
+/*
+** Устанавливает автоматический ответ на сообщение PRIVMSG
+** Если вызывается без аргументов, отменяет его
+**
+** @Command: AWAY
+** @Parameters: <message>
+**
+*/
+
+void	IrcServer::AWAY(std::vector<std::string> arguments, int fd)
+{
+
+    ClientIrc   *client;
+
+    _MainServer->Logger(PURPLE, "Make command AWAY");
+
+    client = _MainServer->GetClientFromFd(fd);
+
+    if (!client->is_authenticated())
+    {
+        this->SendInFd(fd, ERR_NOTREGISTERED(client->getNickName()));
+    }
+    else if (arguments.size() == 1 && client->is_away())
+    {
+        this->SendInFd(fd, RPL_UNAWAY(client->getNickName()));
+        client->SetAwayMsg("");
+    }
+    else if (arguments.size() > 1)
+    {
+        this->SendInFd(fd, RPL_NOWAWAY(client->getNickName()));
+        std::string big_away;
+
+        big_away = "";
+        for (unsigned long i = 1; i < arguments.size(); i++)
+        {
+            big_away += arguments[i];
+            big_away += " ";
+        }
+
+        client->SetAwayMsg(big_away);
+    }
+}
+
+
+/*
+ * Отправляет личное сообщение, учитывая автоматический ответ
+ *
+ * @Command: PRIVMSG
+ * @Parameters: <nickname> :<message>
+ */
+// void UsersService::privmsg(std::vector<std::string> args, int client_socket){
+//     if (!_users[client_socket]->is_authenticated()) {
+//         _postman->sendReply(client_socket, ERR_NOTREGISTERED(_users[client_socket]->get_nickname().empty() ?
+//                                                              "*" : _users[client_socket]->get_nickname()));
+
+//     } else if (args.size() != 3) {
+//         if (args.size() == 2){
+//             if (args[1].find(':') != std::string::npos){
+//                 _postman->sendReply(client_socket, ERR_NORECIPIENT(_users[client_socket]->get_nickname(), args[0]));
+//             } else {
+//                 _postman->sendReply(client_socket, ERR_NOTEXTTOSEND(_users[client_socket]->get_nickname()));
+//             }
+//         } else {
+//             _postman->sendReply(client_socket, ERR_TOOMANYTARGETS(_users[client_socket]->get_nickname(), args[1]));
+//         }
+
+//     } else if (findUserByNickname(args[1]) == nullptr && findChannelByName(args[1]) == nullptr){
+//             if (findUserByNickname(args[1]) == nullptr)
+//                 _postman->sendReply(client_socket, ERR_NOSUCHNICK(_users[client_socket]->get_nickname(), args[1]));
+//             else
+//                 _postman->sendReply(client_socket, ERR_NOSUCHCHANNEL(_users[client_socket]->get_nickname(), args[1]));
+
+//     } else if (findChannelByName(args[1]) != nullptr) {
+//             Channel *channel = findChannelByName(args[1]);
+//             channel->sendAll(RPL_PRIVMSG(_users[client_socket]->get_nickname(), channel->get_channelname(), args[2]), _users[client_socket]);
 
 //     } else {
-//         _postman->sendReply(client_socket, "PONG " + args[1] + " " + _users[client_socket]->get_nickname());
+//         int replySocket = findUserByNickname(args[1])->get_socket();
+//         if (_users[replySocket]->is_away())
+//             _postman->sendReply(client_socket, RPL_AWAY(_users[client_socket]->get_nickname(),
+//                                                         _users[replySocket]->get_nickname(),
+//                                                         _users[replySocket]->get_awayMessage()));
+//         else
+//             _postman->sendReply(replySocket, RPL_PRIVMSG(_users[client_socket]->get_nickname(),
+//                                                          _users[replySocket]->get_nickname(),
+//                                                          args[2]));
 //     }
 // }
+
+/*
+** Отправляет личное сообщение, учитывая автоматический ответ
+**
+** @Command: PRIVMSG
+** @Parameters: <nickname> :<message>
+**
+*/
+
+void	IrcServer::PRIVMSG(std::vector<std::string> arguments, int fd)
+{
+    ClientIrc   *client;
+    ClientIrc   *client_to_send;
+
+    _MainServer->Logger(PURPLE, "Make command PRIVMSG");
+
+    client = _MainServer->GetClientFromFd(fd);
+
+    if (!client->is_authenticated())
+    {
+        this->SendInFd(fd, ERR_NOTREGISTERED(client->getNickName()));
+    }
+    else if (arguments.size() != 3)
+    {
+        if (arguments.size() == 2)
+        {
+            if (arguments[1].find(':') != std::string::npos)
+            {
+                this->SendInFd(fd, ERR_NORECIPIENT(client->getNickName(), arguments[0]));
+            }
+            else
+            {
+                this->SendInFd(fd, ERR_NOTEXTTOSEND(client->getNickName()));
+            }
+        }
+        else
+        {
+            this->SendInFd(fd, ERR_TOOMANYTARGETS(client->getNickName(), arguments[1]));
+        }
+
+    }
+    else if (FindClientrByNickname(arguments[1]) == NULL)
+    {
+        
+        this->SendInFd(fd, ERR_NOSUCHNICK(client->getNickName(), arguments[1]));
+    }
+    else
+    {
+        client_to_send = (ClientIrc*)this->FindClientrByNickname(arguments[1]);
+        if (client_to_send != NULL)
+        {
+            if (client_to_send->is_away())
+            {
+                //to_do 
+                this->SendInFd(fd, RPL_AWAY(client->getNickName(), client_to_send->getNickName(), client_to_send->getAmayMsg()));
+                this->SendInFd(client_to_send->getFd(), RPL_PRIVMSG(client->getNickName(), client_to_send->getNickName(), arguments[2]));
+            }
+            else
+            {
+                this->SendInFd(client_to_send->getFd(), RPL_PRIVMSG(client->getNickName(), client_to_send->getNickName(), arguments[2]));
+            }
+
+        }
+    }
+
+}

@@ -65,52 +65,18 @@ class ClientIrc: public Client
             return  (str);
         }
 
-        std::string getName()
-        {
-            return (_name);
-        } 
-        
-        std::string getNickName()
-        {
-            return (_nickname);
-        } 
-        
-
-        void setName(std::string  name)
-        {
-            this->_name = name;
-        }
-
-        void SetNickName(std::string &name)
-        {
-            this->_nickname = name;
-        }
-
-        void SetRealName(std::string &name)
-        {
-            this->_realname = name;
-        }
-
-
-        void ChangeStatusConnect()
-        {
-            _isconnect = true;
-        }
-        
-        void ChangeStatusAuthenticated()
-        {
-            _auntificated = true;
-        }
-
-        bool is_connected()
-        {
-            return (_isconnect);
-        }
-
-        bool is_authenticated()
-        {
-            return (_auntificated);
-        }
+        std::string getName(){return (_name);} 
+        std::string getNickName(){return (_nickname);} 
+        std::string getAmayMsg(){return _awayMessage;}
+        void setName(std::string  name){this->_name = name;}
+        void SetNickName(std::string &name){this->_nickname = name;}
+        void SetRealName(std::string &name){this->_realname = name;}
+        void ChangeStatusConnect(){_isconnect = true;}
+        void ChangeStatusAuthenticated(){_auntificated = true;}
+        bool is_connected(){return (_isconnect);}
+        bool is_authenticated(){return (_auntificated);}
+        bool is_away(){return (!_awayMessage.empty());}
+        void SetAwayMsg(std::string msg){_awayMessage = msg;}
 
 
 
@@ -120,9 +86,13 @@ class ClientIrc: public Client
         std::string    _username;
         std::string    _realname;
         std::string    _nickname;
+        std::string    _awayMessage;
         bool           _isconnect; /* If succsecc password */
         bool           _auntificated;
 
 };
  
 #endif
+
+// USER ifanzilka2 * 127.0.0.1 :Fanzil2
+// NICK fanzil2

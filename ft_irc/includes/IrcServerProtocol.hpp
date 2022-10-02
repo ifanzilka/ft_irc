@@ -25,6 +25,24 @@
 #define ERR_ERRONEUSNICKNAME(nickname, nick)            (":ircserv 432 " + (nickname) + ' ' + (nick) + " :Erroneus nickname")
 #define ERR_NICKNAMEINUSE(oldnickname, nickname)        (":ircserv 433 " + (oldnickname) + ' ' + (nickname) + " :Nickname is already in use")
 
+//AWAY
+#define RPL_AWAY(sender, recipient, away_message)       (":ircserv 301 " + (sender) + " " + (recipient) + " :" + (away_message))
+#define RPL_UNAWAY(nickname)                            (":ircserv 305 " + (nickname) + " :You are no longer marked as being away")
+#define RPL_NOWAWAY(nickname)                           (":ircserv 306 " + (nickname) + " :You have been marked as being away")
+
+//PRIVMSG
+#define ERR_NORECIPIENT(nickname, command)      (":ircserv 411 " + (nickname) + " :No recipient given " + (command))
+#define ERR_NOTEXTTOSEND(nickname)              (":ircserv 421 " + (nickname) + " :No text to send")
+
+
+
+#define RPL_QUIT(nickname, message)                     (":ircserv " + (nickname) + " quited :" + (message))
+#define RPL_PRIVMSG(sender, recipient, msg)             (":" + (sender) + " PRIVMSG " + (recipient) + " :"+ (msg))
+#define RPL_JOIN(nickname, channel)                     (":" + (nickname) + " JOIN " + (channel))
+#define RPL_PART(nickname, channel, reason)             (":" + (nickname) + " PART " + (channel) + " :" + (reason))
+#define RPL_INVITING(nickname, nicknameInvited, channel)(":" + (nickname) + " INVITE " + (nicknameInvited) + " :" + (channel))
+#define RPL_KICK(nickname, channel, user, reason)       (":" + (nickname) + " KICK " + (channel) + ' ' + (user) + " :" + (reason))
+#define RPL_MODE(nickname, user, changes)               (":" + (nickname) + " MODE " + (user) + " :" + (changes))
 
 //__ERRORS_____________________________________________________
 #define ERR_NOSUCHNICK(nickname, nick)                  (":ircserv 401 " + (nickname) + ' ' + (nick) + " :No such nick/channel")
@@ -37,6 +55,12 @@
 #define ERR_CHANOPRIVSNEEDED(nickname, channel)         (":ircserv 482 " + (nickname) + ' ' + (channel) + " :You're not channel operator")
 
 
-#define RPL_QUIT(nickname, message)                     (":ircserv " + (nickname) + " quited :" + (message))
-
 #endif
+
+// PASS :89639019932
+// USER ifanzilka * 127.0.0.1 :Fanzil
+// NICK fanzil
+
+// PASS :89639019932
+// USER ifanzilka2 * 127.0.0.1 :Fanzil2
+// NICK fanzil2

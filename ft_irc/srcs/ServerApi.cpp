@@ -197,9 +197,6 @@ int AbstractServerApi::SendInFd(int fd, std::string msg)
 	size_t 	len_msg = msg.size();
 	size_t  BUFFER_LEN = BUFFER_SIZE_SEND > len_msg ? len_msg : BUFFER_SIZE_SEND;
 
-	Logger(PURPLE, std::string("Attempt to send: "));
-	Logger(B_BLUE, msg);
-
 	while (sended < len_msg)
 	{
 		res_send = send(fd, c_msg, BUFFER_LEN , 0);
@@ -212,9 +209,9 @@ int AbstractServerApi::SendInFd(int fd, std::string msg)
 
 	}
 	send(fd, "\n", 1 , 0);
-	std::cout << B_GRAY;
-	std::cout << msg << std::endl; 
-	std::cout << NORM;
+	// std::cout << B_GRAY;
+	// std::cout << msg << std::endl; 
+	// std::cout << NORM;
 	//Logger(PURPLE, "Server sended:\n");
 	//Logger(B_GRAY, msg);
 	return (0);
