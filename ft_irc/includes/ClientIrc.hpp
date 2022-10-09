@@ -41,7 +41,8 @@ class ClientIrc: public Client
         {
             std::string user("user_");
 
-            _name = user + std::to_string(fd_client);
+            _name = "";
+            //_name = user + std::to_string(fd_client);
             _nickname = _name;
             _realname = "None";
             _isconnect = false;

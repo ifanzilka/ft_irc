@@ -126,9 +126,14 @@ int IrcServer::SendInFd(int fd, std::string msg)
     if (client == NULL)
         return (0);
 
+    std::cout << "\n";
     _MainServer->Logger(PURPLE, std::string("[") + client->getNickName() + "] " + std::string("Attempt to send: "));
 	_MainServer->Logger(B_BLUE, msg);
+    std::cout << "\n";
+    
+    msg += "\r\n";
     res = _MainServer->SendInFd(fd, msg);
+    //res = _MainServer->SendInFd(fd, "\n\r");
     return (res);
 }
 
@@ -142,6 +147,7 @@ void IrcServer::Start()
     events = this->WaitEvent();
     while (1)
     {
+        _MainServer->_msg="";
         if (events == 0)
             events = this->WaitEvent();
 
@@ -204,10 +210,11 @@ void    IrcServer::ParseMessage(int fd)
         if (comands[i] != "")
         {
             ut::ProcessingStr(comands[i]);
-            
+
+            //std::cout << "cmd start\n" << std::endl;        
             std::vector<std::string> arguments = ut::splitForCmd(comands[i]);
             MakeComand(arguments, fd);
-
+    
         }
 
     }

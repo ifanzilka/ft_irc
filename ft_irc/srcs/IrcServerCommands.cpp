@@ -65,32 +65,40 @@ void	IrcServer::USER(std::vector<std::string> arguments, int fd)
     }
     else if (arguments.size() == 5)
     {
+        //USER Adium * 127.0.0.1 :Пользователь Adium
         // std::cout << "1 " << arguments[0] << std::endl;  // USER
-        // std::cout << "2 " << arguments[1] << std::endl;  // ifanzilka
+        // std::cout << "2 " << arguments[1] << std::endl;  // Adium
         // std::cout << "3 " << arguments[2] << std::endl;  // *
         // std::cout << "4 " << arguments[3] << std::endl;  // 127.0.0.1
-        // std::cout << "5 " << arguments[4] << std::endl;  // Fanzil
+        // std::cout << "5 " << arguments[4] << std::endl;  // Пользователь Adium
 
         /* Check name */
         for (std::vector<ClientIrc*>:: iterator start = _MainServer->_Clients.begin(); start != _MainServer->_Clients.end(); start++)
         {
             if ((*start)->getName() == arguments[1])
             {
-                this->SendInFd(fd, ERR_ALREADYREGISTRED(client->getNickName()));
+                if (client->getNickName() == "")
+                {
+                    this->SendInFd(fd, ERR_ALREADYREGISTRED(std::string("*")));
+                }
+                else
+                {
+                    this->SendInFd(fd, ERR_ALREADYREGISTRED(client->getNickName()));
+                }
                 return;
             }
         }
         client->setName(arguments[1]);
         client->SetRealName(arguments[4]);
-        if (!client->is_authenticated())
-        {
-            client->ChangeStatusAuthenticated();
-            WelcomeUser(client, fd);
-        }
+        // if (!client->is_authenticated())
+        // {
+        //     client->ChangeStatusAuthenticated();
+        //     WelcomeUser(client, fd);
+        // }
     }
     else
     {
-        this->SendInFd(fd, ERR_NEEDMOREPARAMS(client->getNickName(), std::string("PASS")));
+        this->SendInFd(fd, ERR_NEEDMOREPARAMS(client->getNickName(), std::string("USER")));
     }
 
 }
@@ -107,6 +115,21 @@ void    IrcServer::WelcomeUser(ClientIrc *client, int fd)
 
 }
 
+
+bool    isValidNickname(const std::string& nick)
+{
+    const std::string spec = "-[]^{}";
+    if (nick.length() > 9)
+        return false;
+    for (unsigned long i = 0; i < nick.length(); ++i)
+    {
+        if (!std::isalnum(nick[i]) && spec.find(nick[i]) == std::string::npos)
+            return false;
+    }
+    return true;
+}
+
+
 /*
 ** Устанавливает новый ник или изменяет старый
 **
@@ -120,7 +143,6 @@ void	IrcServer::NICK(std::vector<std::string> arguments, int fd)
     ClientIrc *client;
 
     _MainServer->Logger(PURPLE, "Make command NICK");
-
 
     client = _MainServer->GetClientFromFd(fd);
 
@@ -137,21 +159,25 @@ void	IrcServer::NICK(std::vector<std::string> arguments, int fd)
     else if (FindClientrByNickname(arguments[1]) != NULL)
     {
         this->SendInFd(fd, ERR_NICKNAMEINUSE(client->getNickName(), arguments[1]));   
-    }/* Check valid Ncik*/ //to_do
+    }
+    else if (!isValidNickname(arguments[1]))
+    {
+        this->SendInFd(fd, ERR_ERRONEUSNICKNAME(std::string("*"), arguments[1]));
+        //this->QUIT(arguments, fd);
+    }
     else
     {
+        
         if (!client->is_authenticated())
         {
             
             client->ChangeStatusAuthenticated();
-
             client->SetNickName(arguments[1]);
             WelcomeUser(client, fd);
         }
         else
-        {
+        {   this->SendInFd(fd, RPL_ENDOFMOTD(arguments[1]));
             client->SetNickName(arguments[1]);
-            WelcomeUser(client, fd);
         }
     }
 }
@@ -173,7 +199,7 @@ void	IrcServer::QUIT(std::vector<std::string> arguments, int fd)
 
     client = _MainServer->GetClientFromFd(fd);
     this->SendInFd(fd, RPL_QUIT(client->getNickName(), arguments.size() > 1 ? arguments[1] : "silently"));
-
+    _MainServer->RemoveClient(fd);
 }
 
 
