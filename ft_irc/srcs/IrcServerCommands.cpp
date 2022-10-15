@@ -385,3 +385,37 @@ void	IrcServer::PRIVMSG(std::vector<std::string> arguments, int fd)
     }
 
 }
+
+
+/*
+ * Добавляет юзера в канал, а если такого канала не существует, создает его
+ *
+ * @Command: JOIN
+ * @Parameters: <channel> {,<channels>}
+ */
+
+void	IrcServer::JOIN(std::vector<std::string> arguments, int fd)
+{
+    ClientIrc   *client;
+    ClientIrc   *client_to_send;
+
+    _MainServer->Logger(PURPLE, "Make command JOIN");
+
+    client = _MainServer->GetClientFromFd(fd);
+
+    if (!client->is_authenticated())
+    {
+        this->SendInFd(fd, ERR_NOTREGISTERED(client->getNickName()));
+    }
+    else if (arguments.size() != 2)
+    {
+        this->SendInFd(client_to_send->getFd(), ERR_NEEDMOREPARAMS(client->getNickName(), arguments[0]));
+    }
+    else
+    {
+        std::vector<std::string> channelNames = ut::split(arguments[1], ",");
+        //Channel *channel = nullptr;
+
+    }
+
+}

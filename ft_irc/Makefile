@@ -35,7 +35,7 @@ KQUEUE_SRCS = srcs/ServerKqueue.cpp
 MAIN_TEST = srcs/MainServerApi.cpp
 
 
-
+NAME_PROGRAMM = ircserver
 
 ##**********##
 ### COLORS ###
@@ -65,16 +65,16 @@ all:
 
 
 select:
-	$(CXX) $(CPPFLAGS) -I$(INCLUDES) $(SRCS) $(SELECT_SRCS) $(MAIN_TEST) -D SELECT
+	$(CXX) $(CPPFLAGS) -I$(INCLUDES) $(SRCS) $(SELECT_SRCS) $(MAIN_TEST) -D SELECT -o $(NAME_PROGRAMM)
 	
 poll:
-	$(CXX) $(CPPFLAGS) -I$(INCLUDES) $(SRCS) $(POLL_SRCS) $(MAIN_TEST) -D POLL
+	$(CXX) $(CPPFLAGS) -I$(INCLUDES) $(SRCS) $(POLL_SRCS) $(MAIN_TEST) -D POLL -o $(NAME_PROGRAMM)
 
 kqueue:
-	$(CXX) $(CPPFLAGS) -I$(INCLUDES) $(SRCS) $(KQUEUE_SRCS) $(MAIN_TEST) -D KQUEUE
+	$(CXX) $(CPPFLAGS) -I$(INCLUDES) $(SRCS) $(KQUEUE_SRCS) $(MAIN_TEST) -D KQUEUE -o $(NAME_PROGRAMM)
 
 epoll:
-	$(CXX) $(CPPFLAGS) -I$(INCLUDES) $(SRCS) $(EPOLL_SRCS) $(MAIN_TEST) -D EPOLL
+	$(CXX) $(CPPFLAGS) -I$(INCLUDES) $(SRCS) $(EPOLL_SRCS) $(MAIN_TEST) -D EPOLL -o $(NAME_PROGRAMM)
 
 code:
 	@echo " ~~~~~~~~~~~~~~~~"

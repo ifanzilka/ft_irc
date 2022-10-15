@@ -41,35 +41,10 @@ int main(int argc, char **argv)
         // }
 
         serv.Start();
-
-        int events;
-        int res;
-        while (1)
-        {
-            events = serv.WaitEvent();
-            int connect = serv.CheckConnect();
-            if (connect > 0)
-                continue;
-            
-            connect = serv.CheckDisconnect();
-            if (connect > 0)
-
-                continue;
-
-            res = serv.CheckAndRead();
-            if (res > 1)
-            {
-                serv.ParseMessage(res);
-            }
-            
-
-        }
-        events--;
-		//serv.Start();
-	}
+    }
 	else
 	{
-		std::cout << "Use: webserv port password\n";
+		std::cout << RED"Use: ircserver <port> <password>\n"F_NONE;
 	}
 
     return (42);

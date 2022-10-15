@@ -43,6 +43,7 @@ void IrcServer::InitComands()
     _commands["PING"] = &IrcServer::PING;
     _commands["AWAY"] = &IrcServer::AWAY;
     _commands["PRIVMSG"] = &IrcServer::PRIVMSG;
+    _commands["JOIN"] = &IrcServer::JOIN;
 }
 
 
