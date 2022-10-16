@@ -386,6 +386,58 @@ void	IrcServer::PRIVMSG(std::vector<std::string> arguments, int fd)
 
 }
 
+
+
+void	IrcServer::NOTICE(std::vector<std::string> arguments, int fd)
+{
+    ClientIrc   *client;
+    ClientIrc   *client_to_send;
+
+    _MainServer->Logger(PURPLE, "Make command PRIVMSG");
+
+    client = _MainServer->GetClientFromFd(fd);
+
+    if (!client->is_authenticated())
+    {
+        this->SendInFd(fd, ERR_NOTREGISTERED(client->getNickName()));
+    }
+    else if (arguments.size() != 3)
+    {
+        if (arguments.size() == 2)
+        {
+            if (arguments[1].find(':') != std::string::npos)
+            {
+                this->SendInFd(fd, ERR_NORECIPIENT(client->getNickName(), arguments[0]));
+            }
+            else
+            {
+                this->SendInFd(fd, ERR_NOTEXTTOSEND(client->getNickName()));
+            }
+        }
+        else
+        {
+            this->SendInFd(fd, ERR_TOOMANYTARGETS(client->getNickName(), arguments[1]));
+        }
+
+    }
+    else if (FindClientrByNickname(arguments[1]) == NULL)
+    {
+        this->SendInFd(fd, ERR_NOSUCHNICK(client->getNickName(), arguments[1]));
+    }
+    else
+    {
+        client_to_send = (ClientIrc*)this->FindClientrByNickname(arguments[1]);
+        if (client_to_send != NULL)
+        {
+            this->SendInFd(client_to_send->getFd(), RPL_PRIVMSG(client->getNickName(), client_to_send->getNickName(), arguments[2]));
+        }
+    }
+
+}
+
+
+
+
 // static bool    isValidChannel(const std::string& channel)
 // {
 //     if (channel[0] != '#')

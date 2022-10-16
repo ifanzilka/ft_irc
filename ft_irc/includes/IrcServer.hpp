@@ -59,7 +59,9 @@ class IrcServer
         void	PING(std::vector<std::string> arguments, int fd);
         void	AWAY(std::vector<std::string> arguments, int fd);
         void	PRIVMSG(std::vector<std::string> arguments, int fd);
+        void	NOTICE(std::vector<std::string> arguments, int fd);
         void	JOIN(std::vector<std::string> arguments, int fd);
+
         
         
     protected:
