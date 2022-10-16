@@ -31,6 +31,18 @@ class Client
 
 };
 
+enum UserMode
+{
+    UserNone = 0,					// 0000000000
+    invisibility = 1 << 0,          // 0000000001
+    silence = 1 << 1,          		// 0000000010
+    userOper = 1 << 2,				// 0000000100
+    wallopsOff = 1 << 3,       		// 0000001000
+
+    /* Other */
+};
+
+
 
 class ClientIrc: public Client
 {
@@ -81,6 +93,23 @@ class ClientIrc: public Client
 
 
 
+        void                setMode(UserMode flag)
+        {
+            this->_modes |= flag;
+        }
+
+        void                unsetMode(UserMode flag)
+        {
+            this->_modes &= (~flag);
+        }
+        
+        bool                hasMode(UserMode flag) const
+        {
+            return ((_modes & flag) == flag);
+        }
+        
+        // std::string         showMode() const;
+
 
     private:
         std::string    _name;
@@ -88,6 +117,7 @@ class ClientIrc: public Client
         std::string    _realname;
         std::string    _nickname;
         std::string    _awayMessage;
+        int            _modes;
         bool           _isconnect; /* If succsecc password */
         bool           _auntificated;
 

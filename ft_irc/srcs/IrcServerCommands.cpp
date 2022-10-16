@@ -387,13 +387,21 @@ void	IrcServer::PRIVMSG(std::vector<std::string> arguments, int fd)
 }
 
 
+/*
+** Отправляет личное сообщение, не учитывая автоматический ответ
+**
+** @Command: NOTICE
+** @Parameters: <nickname> :<message>
+**
+*/
+
 
 void	IrcServer::NOTICE(std::vector<std::string> arguments, int fd)
 {
     ClientIrc   *client;
     ClientIrc   *client_to_send;
 
-    _MainServer->Logger(PURPLE, "Make command PRIVMSG");
+    _MainServer->Logger(PURPLE, "Make command NOTIC");
 
     client = _MainServer->GetClientFromFd(fd);
 
@@ -434,6 +442,80 @@ void	IrcServer::NOTICE(std::vector<std::string> arguments, int fd)
     }
 
 }
+
+
+
+/*
+** Отправляет все операм сообщение
+**
+** @Command: WALLOPS
+** @Parameters: <message>
+**
+*/
+
+void	IrcServer::WALLOPS(std::vector<std::string> arguments, int fd)
+{
+    ClientIrc   *client;
+
+    _MainServer->Logger(PURPLE, "Make command WALLOPS");
+
+    client = _MainServer->GetClientFromFd(fd);
+
+    if (!client->is_authenticated())
+    {
+        this->SendInFd(fd, ERR_NOTREGISTERED(client->getNickName()));
+    }
+    if (arguments.size() != 2)
+    {
+        this->SendInFd(fd, ERR_NEEDMOREPARAMS(client->getNickName(), arguments[0]));
+    }
+    else
+    {
+
+        for (std::vector<ClientIrc *>::iterator start = _operVec.begin(); start != _operVec.end(); start++)
+        {
+            fd = (*start)->getFd();
+            this->SendInFd(fd, RPL_PRIVMSG(client->getNickName(), (*start)->getNickName(), arguments[1]));
+        }
+    }
+}
+
+/*
+** Задаю режим опера
+** OPER LoginOper PassOper
+** 
+**
+*/
+
+void	IrcServer::OPER(std::vector<std::string> arguments, int fd)
+{
+    ClientIrc   *client;
+
+    _MainServer->Logger(PURPLE, "Make command OPER");
+
+    client = _MainServer->GetClientFromFd(fd);
+
+    if (!client->is_authenticated())
+    {
+        this->SendInFd(fd, ERR_NOTREGISTERED(client->getNickName()));
+    }
+    else if (arguments.size() > 2)
+    {
+        this->SendInFd(fd, ERR_NEEDMOREPARAMS(client->getNickName(), arguments[0]));
+    }
+    else if (!(std::equal(arguments[0].begin(),arguments[0].end(), LOGIN_OPER)))
+        this->SendInFd(fd, ERR_PASSWDMISMATCH(client->getNickName()));
+    else if (!(std::equal(arguments[1].begin(),arguments[1].end(), PASS_OPER)))
+        this->SendInFd(fd, ERR_PASSWDMISMATCH(client->getNickName()));
+    else
+    {
+        this->SendInFd(fd, RPL_YOUREOPER(client->getNickName()));
+        _operVec.push_back(client);
+        client->setMode(userOper);
+    }
+}
+
+
 
 
 
@@ -533,3 +615,4 @@ void	IrcServer::NOTICE(std::vector<std::string> arguments, int fd)
 //     }
 
 // }
+

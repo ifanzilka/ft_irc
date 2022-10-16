@@ -44,6 +44,9 @@ void IrcServer::InitComands()
     _commands["AWAY"] = &IrcServer::AWAY;
     _commands["PRIVMSG"] = &IrcServer::PRIVMSG;
     _commands["NOTICE"] = &IrcServer::NOTICE;
+    _commands["WALLOPS"] = &IrcServer::WALLOPS;
+    _commands["OPER"] = &IrcServer::OPER;
+    
     //_commands["JOIN"] = &IrcServer::JOIN;
 }
 

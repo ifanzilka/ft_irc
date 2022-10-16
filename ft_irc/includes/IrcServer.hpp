@@ -14,6 +14,9 @@
 // #define EPOLL   2
 // #define KQUEUE  3
 
+#define LOGIN_OPER "admin"
+#define PASS_OPER "admin"
+
 #define DELIMETER_COMAND "\n"
 
 class IrcServer
@@ -60,6 +63,8 @@ class IrcServer
         void	AWAY(std::vector<std::string> arguments, int fd);
         void	PRIVMSG(std::vector<std::string> arguments, int fd);
         void	NOTICE(std::vector<std::string> arguments, int fd);
+        void	WALLOPS(std::vector<std::string> arguments, int fd);
+        void	OPER(std::vector<std::string> arguments, int fd);
         void	JOIN(std::vector<std::string> arguments, int fd);
 
         
@@ -69,7 +74,13 @@ class IrcServer
         typedef	void (IrcServer::*commandPtr)(std::vector<std::string>, int);
         std::map<std::string, commandPtr>   _commands;
 
-        AbstractServerApi *_MainServer;
+        /* Главный сервер для работы с сокетами */
+        AbstractServerApi           *_MainServer;
+
+        /* Клинты которые как оперы */
+        std::vector<ClientIrc *>    _operVec;
+
+
         //std::vector<Channel>   _channels;
         std::string        _pass;
         std::string        _pass_hash;
