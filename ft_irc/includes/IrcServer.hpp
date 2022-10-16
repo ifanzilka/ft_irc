@@ -48,7 +48,7 @@ class IrcServer
 
 
         Client*       FindClientrByNickname(const std::string& nickname);
-        Channel*      FindChannelByName(const std::string& name);
+        //Channel*      FindChannelByName(const std::string& name);
 
 
         void    WelcomeUser(ClientIrc *client, int fd);
@@ -68,7 +68,7 @@ class IrcServer
         std::map<std::string, commandPtr>   _commands;
 
         AbstractServerApi *_MainServer;
-        std::vector<Channel>   _channels;
+        //std::vector<Channel>   _channels;
         std::string        _pass;
         std::string        _pass_hash;
 

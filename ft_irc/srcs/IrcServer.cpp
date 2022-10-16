@@ -43,7 +43,7 @@ void IrcServer::InitComands()
     _commands["PING"] = &IrcServer::PING;
     _commands["AWAY"] = &IrcServer::AWAY;
     _commands["PRIVMSG"] = &IrcServer::PRIVMSG;
-    _commands["JOIN"] = &IrcServer::JOIN;
+    //_commands["JOIN"] = &IrcServer::JOIN;
 }
 
 
@@ -249,10 +249,10 @@ Client*     IrcServer::FindClientrByNickname(const std::string& nickname)
     return (NULL);
 }
 
-Channel*      IrcServer::FindChannelByName(const std::string& name)
-{
-    //TO_DO
+// Channel*      IrcServer::FindChannelByName(const std::string& name)
+// {
+//     //TO_DO
 
-}
+// }
 
 # endif
