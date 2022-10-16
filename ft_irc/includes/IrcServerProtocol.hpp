@@ -11,7 +11,10 @@
 
 # define RPL_YOUREOPER(nickname)                         (":ircserv 381 " + (nickname) + " :You are now an IRC operator")
 
-
+//CHANNEL
+#define ERR_USERNOTINCHANNEL(nickname, user, channel)   (":ircserv 441 " + (nickname) + ' '  + (user) + ' ' + (channel) + " :They aren't on that channel")
+#define ERR_NOTONCHANNEL(nickname, channel)             (":ircserv 442 " + (nickname) + ' ' + (channel) + " :You're not on that channel")
+#define ERR_USERONCHANNEL(nickname, user, channel)      (":ircserv 443 " + (nickname) + ' ' + (user) + ' ' + (channel) + " :is already on channel")
 
 //PASS
 #define ERR_NOTREGISTERED(nickname)                     (":ircserv 451 " + (nickname) + " :You have not registered")
@@ -53,6 +56,7 @@
 #define ERR_TOOMANYTARGETS(nickname, target)            (":ircserv 407 " + (nickname) + ' ' + (target) + " :Duplicate recipients. No message delivered")
 #define ERR_UNKNOWNCOMMAND(nickname, command)           (":ircserv 421 " + (nickname) + ' ' + (command) + " :Unknown command")
 #define ERR_CHANOPRIVSNEEDED(nickname, channel)         (":ircserv 482 " + (nickname) + ' ' + (channel) + " :You're not channel operator")
+#define ERR_NOSUCHCHANNEL(nickname, channel)            (":ircserv 403 " + (nickname) + ' ' + (channel) + " :No such channel")
 
 
 #endif

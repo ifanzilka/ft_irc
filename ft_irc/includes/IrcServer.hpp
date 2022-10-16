@@ -6,6 +6,7 @@
 #include <ServerKqueue.hpp>
 #include <ServerEpoll.hpp>
 #include "utility.hpp"
+#include "Channels.hpp"
 #include "IrcServerProtocol.hpp"
 
 // #define SELECT  0
@@ -47,6 +48,7 @@ class IrcServer
 
 
         Client*       FindClientrByNickname(const std::string& nickname);
+        Channel*      FindChannelByName(const std::string& name);
 
 
         void    WelcomeUser(ClientIrc *client, int fd);
@@ -65,8 +67,8 @@ class IrcServer
         typedef	void (IrcServer::*commandPtr)(std::vector<std::string>, int);
         std::map<std::string, commandPtr>   _commands;
 
-
-        AbstractServerApi *_MainServer; 
+        AbstractServerApi *_MainServer;
+        std::vector<Channel>   _channels;
         std::string        _pass;
         std::string        _pass_hash;
 

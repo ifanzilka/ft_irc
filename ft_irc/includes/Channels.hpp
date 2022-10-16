@@ -3,7 +3,7 @@
 
 #include "IrcServer.hpp"
 
-class Channels
+class Channel
 {
     private:
 
@@ -11,9 +11,14 @@ class Channels
         std::vector<ClientIrc *>                _clients;
 
     public:
-        Channels(std::string name, std::string pass);
-        ~Channels();
+        Channel(std::string name, std::string pass);
+        ~Channel();
 
+
+        /* Check clinet in channel */
+        bool        is_in_channel(ClientIrc client);
+        
+        std::string getChannelName();   
 
 
 };

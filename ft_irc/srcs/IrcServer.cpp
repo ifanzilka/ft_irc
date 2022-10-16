@@ -249,5 +249,10 @@ Client*     IrcServer::FindClientrByNickname(const std::string& nickname)
     return (NULL);
 }
 
+Channel*      IrcServer::FindChannelByName(const std::string& name)
+{
+    //TO_DO
+
+}
 
 # endif

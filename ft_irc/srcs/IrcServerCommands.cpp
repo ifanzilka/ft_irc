@@ -386,12 +386,25 @@ void	IrcServer::PRIVMSG(std::vector<std::string> arguments, int fd)
 
 }
 
+static bool    isValidChannel(const std::string& channel)
+{
+    if (channel[0] != '#')
+        return false;
+
+    for (unsigned long i = 1; i < channel.length(); ++i)
+    {
+        if (!std::isalnum(channel[i]))
+            return false;
+    }
+    return true;
+}
+
 
 /*
  * Добавляет юзера в канал, а если такого канала не существует, создает его
  *
  * @Command: JOIN
- * @Parameters: <channel> {,<channels>}
+ * @Parameters: <channel>{,<channel>} [<key>{,<key>}]
  */
 
 void	IrcServer::JOIN(std::vector<std::string> arguments, int fd)
@@ -413,8 +426,57 @@ void	IrcServer::JOIN(std::vector<std::string> arguments, int fd)
     }
     else
     {
-        std::vector<std::string> channelNames = ut::split(arguments[1], ",");
-        //Channel *channel = nullptr;
+        std::vector<std::string>    channelNames = ut::split(arguments[1], ",");
+        Channel                     *channel = nullptr;
+
+        /* */
+        for (unsigned long i = 0; i < channelNames.size(); i++) {
+            
+            channel = nullptr;
+            if (!isValidChannel(channelNames[i]))
+            {
+                this->SendInFd(client_to_send->getFd(), ERR_NOSUCHCHANNEL(client->getNickName(), channelNames[i]));
+                continue;
+            }
+
+            if ((channel = FindChannelByName(channelNames[i])) == nullptr)
+            {
+                //TO_DO Добавить логику создания канала
+                channel = new Channel(channelNames[i], "pass");
+                //addChannel(channel);
+            }
+
+            if (channel->is_in_channel(*client))
+            {
+                this->SendInFd(client_to_send->getFd(), ERR_USERONCHANNEL(client->getNickName(), client->getNickName(), channel->getChannelName()));
+                continue;
+            }
+
+            // if (channel->has_mode(limited) && channel->get_count_of_users() == channel->get_limit()) {
+            //     _postman->sendReply(client_socket, ERR_CHANNELISFULL(_users[client_socket]->get_nickname(), channel->get_channelname()));
+            //     continue;
+
+            // }
+
+            // if (channel->has_mode(invite_only)) {
+            //     _postman->sendReply(client_socket, ERR_INVITEONLYCHAN(_users[client_socket]->get_nickname(), channel->get_channelname()));
+            //     continue;
+
+            // }
+
+            // channel->addUser(_users.at(client_socket));
+            // channel->sendAll(RPL_JOIN(_users[client_socket]->get_fullname(), channel->get_channelname()), nullptr);
+            // _postman->sendReply(client_socket, RPL_TOPIC(_users[client_socket]->get_nickname(),
+            //                                              channel->get_channelname(),
+            //                                              channel->get_topic()));
+
+            // std::vector<std::string> arg;
+            // for (std::vector<User *>::const_iterator it = channel->get_userlist().begin(); it != channel->get_userlist().end(); ++it) {
+            //     arg.clear();
+            //     arg.push_back("NAMES");
+            //     arg.push_back(channel->get_channelname());
+            //     UsersService::names(arg, (*it)->get_socket());
+            }
 
     }
 
