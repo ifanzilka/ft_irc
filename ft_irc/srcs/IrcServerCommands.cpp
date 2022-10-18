@@ -544,7 +544,6 @@ static bool    isValidChannel(const std::string& channel)
 void	IrcServer::JOIN(std::vector<std::string> arguments, int fd)
 {
     ClientIrc   *client;
-    ClientIrc   *client_to_send = NULL;
 
     _MainServer->Logger(PURPLE, "Make command JOIN");
 
@@ -556,7 +555,7 @@ void	IrcServer::JOIN(std::vector<std::string> arguments, int fd)
     }
     else if (arguments.size() != 2)
     {
-        this->SendInFd(client_to_send->getFd(), ERR_NEEDMOREPARAMS(client->getNickName(), arguments[0]));
+        this->SendInFd(client->getFd(), ERR_NEEDMOREPARAMS(client->getNickName(), arguments[0]));
     }
     else
     {
@@ -569,29 +568,30 @@ void	IrcServer::JOIN(std::vector<std::string> arguments, int fd)
             channel = nullptr;
             if (!isValidChannel(channelNames[i]))
             {
-                this->SendInFd(client_to_send->getFd(), ERR_NOSUCHCHANNEL(client->getNickName(), channelNames[i]));
+                this->SendInFd(client->getFd(), ERR_NOSUCHCHANNEL(client->getNickName(), channelNames[i]));
                 continue;
             }
 
             if ((channel = FindChannelByName(channelNames[i])) == nullptr)
             {
                 //TO_DO Добавить логику создания канала
+                //std::cout << "names: " << channelNames[i] << std::endl;
                 channel = new Channel(channelNames[i], "pass", client, this);
                 _Channels.push_back(channel);
                 continue;
                 
             }
 
-            // if (channel->is_in_channel(*client))
-            // {
-            //     this->SendInFd(client_to_send->getFd(), ERR_USERONCHANNEL(client->getNickName(), client->getNickName(), channel->getChannelName()));
-            //     continue;
-            // }
+            if (channel->IsByClient(client))
+            {
+                this->SendInFd(client->getFd(), ERR_USERONCHANNEL(client->getNickName(), client->getNickName(), channel->GetChannelName()));
+                continue;
+            }
 
+            /* Check limits*/
             // if (channel->has_mode(limited) && channel->get_count_of_users() == channel->get_limit()) {
             //     _postman->sendReply(client_socket, ERR_CHANNELISFULL(_users[client_socket]->get_nickname(), channel->get_channelname()));
             //     continue;
-
             // }
 
             // if (channel->has_mode(invite_only)) {
@@ -600,11 +600,10 @@ void	IrcServer::JOIN(std::vector<std::string> arguments, int fd)
 
             // }
 
-            // channel->addUser(_users.at(client_socket));
-            // channel->sendAll(RPL_JOIN(_users[client_socket]->get_fullname(), channel->get_channelname()), nullptr);
-            // _postman->sendReply(client_socket, RPL_TOPIC(_users[client_socket]->get_nickname(),
-            //                                              channel->get_channelname(),
-            //                                              channel->get_topic()));
+            channel->AddClinet(client);
+            channel->sendEveryone(RPL_JOIN(client->getNickName(), channel->GetChannelName()), nullptr);
+            this->SendInFd(client->getFd(), RPL_TOPIC(client->getNickName(), channel->GetChannelName(), "Hello!"));
+    
 
             // std::vector<std::string> arg;
             // for (std::vector<User *>::const_iterator it = channel->get_userlist().begin(); it != channel->get_userlist().end(); ++it) {
@@ -613,8 +612,6 @@ void	IrcServer::JOIN(std::vector<std::string> arguments, int fd)
             //     arg.push_back(channel->get_channelname());
             //     UsersService::names(arg, (*it)->get_socket());
             }
-
     }
-
 }
 

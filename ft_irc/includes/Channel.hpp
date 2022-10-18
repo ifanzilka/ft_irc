@@ -33,6 +33,8 @@ class Channel
 
         void    sendEveryone(std::string const &send, ClientIrc * sendUser);
         void    kickUser(ClientIrc *callClient, ClientIrc *client, std::string &comment);
+
+        std::string GetChannelName();
         
         //std::string getChannelName(); 
 

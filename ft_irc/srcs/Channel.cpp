@@ -90,6 +90,11 @@ void    Channel::kickUser(ClientIrc *CallClient, ClientIrc *client, std::string 
     }
 }
 
+std::string Channel::GetChannelName()
+{
+    return (_channelName);
+}
+
 
 /* Destructor */
 Channel::~Channel()
