@@ -46,8 +46,7 @@ void IrcServer::InitComands()
     _commands["NOTICE"] = &IrcServer::NOTICE;
     _commands["WALLOPS"] = &IrcServer::WALLOPS;
     _commands["OPER"] = &IrcServer::OPER;
-    
-    //_commands["JOIN"] = &IrcServer::JOIN;
+    _commands["JOIN"] = &IrcServer::JOIN;
 }
 
 
@@ -253,10 +252,12 @@ Client*     IrcServer::FindClientrByNickname(const std::string& nickname)
     return (NULL);
 }
 
-// Channel*      IrcServer::FindChannelByName(const std::string& name)
-// {
-//     //TO_DO
+Channel*      IrcServer::FindChannelByName(const std::string& name)
+{
+    //TO_DO
 
-// }
+    std::cout << name.size();
+    return nullptr;
+}
 
 # endif

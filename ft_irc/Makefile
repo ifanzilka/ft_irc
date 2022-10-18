@@ -22,7 +22,7 @@ CPPFLAGS = -Wall -Wextra -Werror #-std=c++98
 
 INCLUDES = includes
 
-SRCS = srcs/ServerApi.cpp srcs/IrcServer.cpp srcs/utility.cpp srcs/IrcServerCommands.cpp
+SRCS = srcs/ServerApi.cpp srcs/IrcServer.cpp srcs/utility.cpp srcs/IrcServerCommands.cpp srcs/Channel.cpp 
 
 SELECT_SRCS = srcs/ServerSelect.cpp
 

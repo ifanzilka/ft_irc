@@ -1,4 +1,5 @@
-#pragma once
+#ifndef IRCSERVER_HPP
+# define IRCSERVER_HPP
 
 #include "ServerApi.hpp"
 #include <ServerPoll.hpp>
@@ -6,7 +7,7 @@
 #include <ServerKqueue.hpp>
 #include <ServerEpoll.hpp>
 #include "utility.hpp"
-#include "Channels.hpp"
+#include "Channel.hpp"
 #include "IrcServerProtocol.hpp"
 
 // #define SELECT  0
@@ -18,6 +19,8 @@
 #define PASS_OPER "admin"
 
 #define DELIMETER_COMAND "\n"
+
+class Channel;
 
 class IrcServer
 {
@@ -51,7 +54,7 @@ class IrcServer
 
 
         Client*       FindClientrByNickname(const std::string& nickname);
-        //Channel*      FindChannelByName(const std::string& name);
+        Channel*      FindChannelByName(const std::string& name);
 
 
         void    WelcomeUser(ClientIrc *client, int fd);
@@ -77,6 +80,10 @@ class IrcServer
         /* Главный сервер для работы с сокетами */
         AbstractServerApi           *_MainServer;
 
+
+        /* Чаты */
+        std::vector<Channel *>     _Channels;
+        
         /* Клинты которые как оперы */
         std::vector<ClientIrc *>    _operVec;
 
@@ -92,3 +99,4 @@ class IrcServer
 
 };
 
+#endif
