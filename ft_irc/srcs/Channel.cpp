@@ -10,7 +10,8 @@ Channel::Channel(std::string name, std::string pass, ClientIrc * main_client,Irc
     _pass = pass;
     _clients.push_back(main_client);
     _opers.push_back(main_client);
-    _topic = "Hello deat friend";
+    _topic = "Welcome to ifanzilka IrcChannel";
+    FirstMessage(main_client);
 }
 
 void Channel::AddClinet(ClientIrc *client)
@@ -95,6 +96,40 @@ std::string Channel::GetChannelName()
     return (_channelName);
 }
 
+
+std::string Channel::GetTopic()
+{
+    return (_topic);
+}
+
+
+void    Channel::displayTopic(ClientIrc *client)
+{
+    if(_topic.empty())
+    {
+        _IrcServer->SendInFd(client->getFd(), RPL_NOTOPIC(client->getNickName(), this->_channelName));
+    }
+    else
+    {
+        _IrcServer->SendInFd(client->getFd(), RPL_TOPIC(client->getNickName(), this->_channelName, _topic));
+    }
+}
+
+void    Channel::FirstMessage(ClientIrc *client)
+{
+    // std::string     bufHistoryMsg = "";
+
+    // sendEveryone(RPL_JOIN(newUser->getFullname(), this->_nameChannel), nullptr);
+    // displayTopic(newUser);
+    // for(std::vector<User *>::iterator itUserList = _userList.begin(); itUserList != _userList.end(); ++itUserList){
+    //     sendNamesOnline(*itUserList);
+    // }
+
+    sendEveryone(RPL_JOIN(client->getFullname(), this->_channelName), nullptr);
+    displayTopic(client);
+
+
+}
 
 /* Destructor */
 Channel::~Channel()

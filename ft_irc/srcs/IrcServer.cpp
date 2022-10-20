@@ -254,10 +254,20 @@ Client*     IrcServer::FindClientrByNickname(const std::string& nickname)
 
 Channel*      IrcServer::FindChannelByName(const std::string& name)
 {
-    //TO_DO
+    std::vector<Channel*>::iterator iter_begin = _Channels.begin();
+    std::vector<Channel*>::iterator iter_end = _Channels.end();
 
-    std::cout << name.size();
-    return nullptr;
+    while (iter_begin < iter_end)
+    {
+        
+        if (name == (*iter_begin)->GetChannelName())
+        {
+            return ((*iter_begin));
+        }
+
+        iter_begin++;
+    }
+    return (NULL);
 }
 
 # endif

@@ -362,8 +362,20 @@ void	IrcServer::PRIVMSG(std::vector<std::string> arguments, int fd)
     }
     else if (FindClientrByNickname(arguments[1]) == NULL)
     {
+        //this->SendInFd(fd, ERR_NOSUCHNICK(client->getNickName(), arguments[1]));
+
+        Channel *channel;
+        channel = FindChannelByName(arguments[1]);
         
-        this->SendInFd(fd, ERR_NOSUCHNICK(client->getNickName(), arguments[1]));
+        if (channel == NULL)
+        {
+            this->SendInFd(fd, ERR_NOSUCHNICK(client->getNickName(), arguments[1]));
+        }
+        else
+        {
+            channel->sendEveryone(RPL_PRIVMSG(client->getNickName(), channel->GetChannelName(), arguments[2]), client);
+        }
+
     }
     else
     {
@@ -563,7 +575,8 @@ void	IrcServer::JOIN(std::vector<std::string> arguments, int fd)
         Channel                     *channel = nullptr;
 
         /* */
-        for (unsigned long i = 0; i < channelNames.size(); i++) {
+        for (unsigned long i = 0; i < channelNames.size(); i++)
+        {
             
             channel = nullptr;
             if (!isValidChannel(channelNames[i]))
@@ -579,7 +592,7 @@ void	IrcServer::JOIN(std::vector<std::string> arguments, int fd)
                 channel = new Channel(channelNames[i], "pass", client, this);
                 _Channels.push_back(channel);
                 continue;
-                
+       
             }
 
             if (channel->IsByClient(client))
@@ -601,17 +614,7 @@ void	IrcServer::JOIN(std::vector<std::string> arguments, int fd)
             // }
 
             channel->AddClinet(client);
-            channel->sendEveryone(RPL_JOIN(client->getNickName(), channel->GetChannelName()), nullptr);
-            this->SendInFd(client->getFd(), RPL_TOPIC(client->getNickName(), channel->GetChannelName(), "Hello!"));
-    
-
-            // std::vector<std::string> arg;
-            // for (std::vector<User *>::const_iterator it = channel->get_userlist().begin(); it != channel->get_userlist().end(); ++it) {
-            //     arg.clear();
-            //     arg.push_back("NAMES");
-            //     arg.push_back(channel->get_channelname());
-            //     UsersService::names(arg, (*it)->get_socket());
-            }
+            channel->FirstMessage(client);
+        }
     }
 }
-

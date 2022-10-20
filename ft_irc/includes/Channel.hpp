@@ -35,6 +35,10 @@ class Channel
         void    kickUser(ClientIrc *callClient, ClientIrc *client, std::string &comment);
 
         std::string GetChannelName();
+        std::string GetTopic();
+
+        void    displayTopic(ClientIrc *cleint);
+        void    FirstMessage(ClientIrc *cleint);
         
         //std::string getChannelName(); 
 

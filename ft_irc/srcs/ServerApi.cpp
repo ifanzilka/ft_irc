@@ -361,6 +361,8 @@ void AbstractServerApi::GetNameInfo(const sockaddr * clientaddr)
 		ServerError("getnameinfo");
 	}
 	//printf("host=%s, serv=%s\n", hbuf, sbuf);
+	//std::string			hosts(hbuf);
+	
 }
 
 

@@ -12,13 +12,30 @@ class Client
 			_fd = fd_client;
 			_addrinfo = addrinfo_client;
 			_server_ipaddr = server_ipaddr;
+            GetNameInfo((sockaddr *)&addrinfo_client);
+                    
 		};
 
 		int getFd() const
 		{ 
 			return (_fd);
 		}
-		
+
+        void GetNameInfo(const sockaddr * clientaddr)
+        {
+            char 				hbuf[NI_MAXHOST], sbuf[NI_MAXSERV];
+
+            if (getnameinfo(clientaddr, clientaddr->sa_len, hbuf, sizeof(hbuf), sbuf, sizeof(sbuf), NI_NUMERICHOST | NI_NUMERICSERV))
+            {
+               printf("Error!\n");
+            }
+            //printf("host=%s, serv=%s\n", hbuf, sbuf);
+            std::string			hosts(hbuf);
+            _host  = hosts;
+        }
+
+
+
 		struct sockaddr_in getAddrInfo() const
 		{
 			return (_addrinfo);
@@ -27,6 +44,7 @@ class Client
 		struct sockaddr_in 	_addrinfo;
 		int					_fd;
 		std::string			_server_ipaddr;
+        std::string         _host;
 
 
 };
@@ -81,6 +99,7 @@ class ClientIrc: public Client
         std::string getName(){return (_name);} 
         std::string getNickName(){return (_nickname);} 
         std::string getAmayMsg(){return _awayMessage;}
+        std::string getFullname() const { return this->_nickname + '!' + this->_nickname + '@' + _host;}
         void setName(std::string  name){this->_name = name;}
         void SetNickName(std::string &name){this->_nickname = name;}
         void SetRealName(std::string &name){this->_realname = name;}
