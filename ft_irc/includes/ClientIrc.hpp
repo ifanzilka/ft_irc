@@ -24,8 +24,9 @@ class Client
         void GetNameInfo(const sockaddr * clientaddr)
         {
             char 				hbuf[NI_MAXHOST], sbuf[NI_MAXSERV];
+            //socklen_t           addrlen;         /* input */
 
-            if (getnameinfo(clientaddr, clientaddr->sa_len, hbuf, sizeof(hbuf), sbuf, sizeof(sbuf), NI_NUMERICHOST | NI_NUMERICSERV))
+            if (getnameinfo(clientaddr, sizeof (struct sockaddr), hbuf, sizeof(hbuf), sbuf, sizeof(sbuf), NI_NUMERICHOST | NI_NUMERICSERV))
             {
                printf("Error!\n");
             }

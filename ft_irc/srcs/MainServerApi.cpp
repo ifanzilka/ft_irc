@@ -5,6 +5,7 @@
 #include <ServerKqueue.hpp>
 #include <ServerEpoll.hpp>
 #include <IrcServer.hpp>
+#include <Color.hpp>
 
 int main(int argc, char **argv)
 {
@@ -44,7 +45,7 @@ int main(int argc, char **argv)
     }
 	else
 	{
-		std::cout << RED"Use: ircserver <port> <password>\n"F_NONE;
+		std::cout << RED"Use: ircserver <port> <password>\n" << F_NONE;
 	}
 
     return (42);
