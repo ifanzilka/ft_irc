@@ -222,7 +222,7 @@
 			if (_evList[i].filter == EVFILT_READ)
 			{
 				res = AbstractServerApi::ReadInFd(client_fd);
-				AbstractServerApi::SendInFd(client_fd, std::string("Sucsess in read\n"));
+				//AbstractServerApi::SendInFd(client_fd, std::string("Sucsess in read\n"));
 				//event_flag = EVFILT_READ;
 
 				return(client_fd);

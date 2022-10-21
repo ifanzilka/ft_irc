@@ -1,8 +1,6 @@
 #include "Channel.hpp"
 
 /* Constructor */
-//Channel::Channel(){}
-
 Channel::Channel(std::string name, std::string pass, ClientIrc * main_client,IrcServer *ircservr)
 {
     _IrcServer = ircservr;
@@ -14,12 +12,15 @@ Channel::Channel(std::string name, std::string pass, ClientIrc * main_client,Irc
     FirstMessage(main_client);
 }
 
+
+/* Добавление клиента в канал */
 void Channel::AddClinet(ClientIrc *client)
 {
     _clients.push_back(client);
     FirstMessage(client);
 }
 
+/* Удаляю клиента и говорю все что я вышел */
 void Channel::RemoveClient(ClientIrc *client)
 {
     if(!IsByClient(client))
@@ -44,6 +45,7 @@ void Channel::RemoveOper(ClientIrc *client)
     _opers.erase(std::find(_opers.begin(), _opers.end(), client));
 }
 
+/* Проверка на то что клиент есть в канале */
 bool    Channel::IsByClient(ClientIrc *client)
 {
     if (std::find(_clients.begin(), _clients.end(), client) != _clients.end())
@@ -63,7 +65,7 @@ bool    Channel::IsByOper(ClientIrc *client)
     return false;
 }
 
-
+/* Отправка сообщения всем клиентам */
 void Channel::sendEveryone(std::string const &send, ClientIrc * sendUser)
 {
     if(!IsByClient(sendUser) && sendUser != nullptr)
@@ -111,7 +113,7 @@ std::string Channel::GetTopic()
     return (_topic);
 }
 
-
+/* Показываю топик канала */
 void    Channel::displayTopic(ClientIrc *client)
 {
     if(_topic.empty())
@@ -124,6 +126,7 @@ void    Channel::displayTopic(ClientIrc *client)
     }
 }
 
+/* Отправка клиенту списка тех кто есть в канале */
 void Channel::sendNamesOnline(ClientIrc *client)
 {
 
@@ -142,6 +145,7 @@ void Channel::sendNamesOnline(ClientIrc *client)
 }
 
 
+/* Приветвенное сообщение при поключение и расыылка всем твоего статуса */
 void    Channel::FirstMessage(ClientIrc *client)
 {
     sendEveryone(RPL_JOIN(client->getFullname(), this->_channelName), nullptr);

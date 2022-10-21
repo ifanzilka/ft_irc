@@ -61,7 +61,7 @@ enum UserMode
 };
 
 
-
+/* Клиенты IRC Сервера */
 class ClientIrc: public Client
 {
     public:

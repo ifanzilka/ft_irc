@@ -245,11 +245,10 @@ int		ServerSelect::CheckAndRead()
 		if (FD_ISSET(i, &_readfds))
 		{
 			
-			int res_read = AbstractServerApi::ReadInFd(i);
-			AbstractServerApi::SendInFd(i, std::string("Sucsess in read\n"));
+			//int res_read = AbstractServerApi::ReadInFd(i);
+			AbstractServerApi::ReadInFd(i);
 			_last_iter_read = i;
 			return (i);
-			//return (res_read);
 		}
 	}
 

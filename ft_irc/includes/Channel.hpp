@@ -6,6 +6,8 @@
 
 class IrcServer;
 
+
+/* Каналы внутри IRC Сервера*/
 class Channel
 {
     private:

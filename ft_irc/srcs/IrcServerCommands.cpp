@@ -275,50 +275,6 @@ void	IrcServer::AWAY(std::vector<std::string> arguments, int fd)
 }
 
 
-/*
- * Отправляет личное сообщение, учитывая автоматический ответ
- *
- * @Command: PRIVMSG
- * @Parameters: <nickname> :<message>
- */
-// void UsersService::privmsg(std::vector<std::string> args, int client_socket){
-//     if (!_users[client_socket]->is_authenticated()) {
-//         _postman->sendReply(client_socket, ERR_NOTREGISTERED(_users[client_socket]->get_nickname().empty() ?
-//                                                              "*" : _users[client_socket]->get_nickname()));
-
-//     } else if (args.size() != 3) {
-//         if (args.size() == 2){
-//             if (args[1].find(':') != std::string::npos){
-//                 _postman->sendReply(client_socket, ERR_NORECIPIENT(_users[client_socket]->get_nickname(), args[0]));
-//             } else {
-//                 _postman->sendReply(client_socket, ERR_NOTEXTTOSEND(_users[client_socket]->get_nickname()));
-//             }
-//         } else {
-//             _postman->sendReply(client_socket, ERR_TOOMANYTARGETS(_users[client_socket]->get_nickname(), args[1]));
-//         }
-
-//     } else if (findUserByNickname(args[1]) == nullptr && findChannelByName(args[1]) == nullptr){
-//             if (findUserByNickname(args[1]) == nullptr)
-//                 _postman->sendReply(client_socket, ERR_NOSUCHNICK(_users[client_socket]->get_nickname(), args[1]));
-//             else
-//                 _postman->sendReply(client_socket, ERR_NOSUCHCHANNEL(_users[client_socket]->get_nickname(), args[1]));
-
-//     } else if (findChannelByName(args[1]) != nullptr) {
-//             Channel *channel = findChannelByName(args[1]);
-//             channel->sendAll(RPL_PRIVMSG(_users[client_socket]->get_nickname(), channel->get_channelname(), args[2]), _users[client_socket]);
-
-//     } else {
-//         int replySocket = findUserByNickname(args[1])->get_socket();
-//         if (_users[replySocket]->is_away())
-//             _postman->sendReply(client_socket, RPL_AWAY(_users[client_socket]->get_nickname(),
-//                                                         _users[replySocket]->get_nickname(),
-//                                                         _users[replySocket]->get_awayMessage()));
-//         else
-//             _postman->sendReply(replySocket, RPL_PRIVMSG(_users[client_socket]->get_nickname(),
-//                                                          _users[replySocket]->get_nickname(),
-//                                                          args[2]));
-//     }
-// }
 
 /*
 ** Отправляет личное сообщение, учитывая автоматический ответ
@@ -530,8 +486,6 @@ void	IrcServer::OPER(std::vector<std::string> arguments, int fd)
 
 
 
-
-
 static bool    isValidChannel(const std::string& channel)
 {
     if (channel[0] != '#')
@@ -601,20 +555,7 @@ void	IrcServer::JOIN(std::vector<std::string> arguments, int fd)
                 continue;
             }
 
-            /* Check limits*/
-            // if (channel->has_mode(limited) && channel->get_count_of_users() == channel->get_limit()) {
-            //     _postman->sendReply(client_socket, ERR_CHANNELISFULL(_users[client_socket]->get_nickname(), channel->get_channelname()));
-            //     continue;
-            // }
-
-            // if (channel->has_mode(invite_only)) {
-            //     _postman->sendReply(client_socket, ERR_INVITEONLYCHAN(_users[client_socket]->get_nickname(), channel->get_channelname()));
-            //     continue;
-
-            // }
-
             channel->AddClinet(client);
-            //channel->FirstMessage(client);
         }
     }
 }
@@ -657,25 +598,4 @@ void	IrcServer::PART(std::vector<std::string> arguments, int fd)
             channel->RemoveClient(client);
         }
     }
-
-
-    // if(!_users[idUser]->isAuthenticated())
-    //     _postman->sendReply(idUser, ERR_NOTREGISTERED(_users[idUser]->getNickname()));
-    // else if(request.size() > 2)
-    //     _postman->sendReply(idUser, ERR_NEEDMOREPARAMS(_users[idUser]->getNickname(), "PART, you can't use ':'"));
-    // else if (request.size() == 1)
-    //     _postman->sendReply(idUser, ERR_NEEDMOREPARAMS(_users[idUser]->getNickname(), "PART, you can't use ':'"));
-    // else
-    // {
-    //     std::vector<std::string>    channelTarget = utils::splitByChar(request[SECOND], ',');
-    //     for(std::vector<std::string>::iterator  listChannel = channelTarget.begin();
-    //                                             listChannel != channelTarget.end(); ++listChannel)
-    //     {
-    //         if(_channels.find(*listChannel) == _channels.end())
-    //             _postman->sendReply(idUser, ERR_NOSUCHCHANNEL(_users[idUser]->getNickname(), *listChannel));
-    //         else
-    //             _channels[*listChannel]->removeUser(_users[idUser]);
-    //     }
-    // }
-
 }
