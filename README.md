@@ -26,3 +26,14 @@ or
 or
         
         make kqueue
+
+
+
+
+
+## Useful links 
+- [wiki by levensta](https://github.com/levensta/IRC-Server)
+- [Example IRC Communications](http://chi.cs.uchicago.edu/chirc/irc_examples.html)
+- [Select / poll / epoll: практическая разница](https://habr.com/ru/company/infopulse/blog/415259/)
+- [Сеть: Системные вызовы](https://masandilov.ru/network/guide_to_network_programming5#5.9)
+- [ERROR REPLIES](https://gist.github.com/proxypoke/2264878)
