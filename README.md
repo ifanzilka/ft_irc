@@ -1,9 +1,16 @@
 # ft_irc
 
+**An Internet Relay Chat server in C++ 98 based on rfc1459 standard.  
+Сервер на базе IRC протокола для обмена сообщениями.**
 
-## Clients:
+<img src="https://media.giphy.com/media/xT1XGwtY71kMjBkORi/giphy.gif" width="300"  alt="channel"/>
 
-[Adium MacOS](https://adium.im/)
+### Supported clients :
+- Netcat 
+  ` nc localhost [port]`
+- LimeChat
+- [Adium MacOS](https://adium.im/)
+
 
 
 # How start
