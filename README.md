@@ -28,6 +28,13 @@ or
         make kqueue
 
 
+## Cmake
+
+
+        mkdir build
+        cd build
+        cmake ..
+        cmake --build .
 
 
 
