@@ -1,5 +1,6 @@
 .vscode/
 *a.out
-*.txt
+*log.txt
 *DS_Store
 ircserver
+build/
