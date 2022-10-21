@@ -69,6 +69,7 @@ class IrcServer
         void	WALLOPS(std::vector<std::string> arguments, int fd);
         void	OPER(std::vector<std::string> arguments, int fd);
         void	JOIN(std::vector<std::string> arguments, int fd);
+        void	PART(std::vector<std::string> arguments, int fd);
 
         
         

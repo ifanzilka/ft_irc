@@ -614,7 +614,68 @@ void	IrcServer::JOIN(std::vector<std::string> arguments, int fd)
             // }
 
             channel->AddClinet(client);
-            channel->FirstMessage(client);
+            //channel->FirstMessage(client);
         }
     }
+}
+
+
+/*
+ * Выход из чата
+ *
+ * @Command: PART
+ * @Parameters: 
+ */
+
+void	IrcServer::PART(std::vector<std::string> arguments, int fd)
+{
+    ClientIrc   *client;
+
+    _MainServer->Logger(PURPLE, "Make command PART");
+
+    client = _MainServer->GetClientFromFd(fd);
+
+    if (!client->is_authenticated())
+    {
+        this->SendInFd(fd, ERR_NOTREGISTERED(client->getNickName()));
+    }
+    else if (arguments.size() != 2)
+    {
+        this->SendInFd(fd, ERR_NEEDMOREPARAMS(client->getNickName(), "PART, you can't use ':'"));
+    }
+    else
+    {
+        Channel* channel;
+        channel = FindChannelByName(arguments[1]);
+        
+        if (channel == nullptr)
+        {
+            this->SendInFd(fd, ERR_NOSUCHCHANNEL(client->getNickName(), arguments[1]));
+        }
+        else
+        {
+            channel->RemoveClient(client);
+        }
+    }
+
+
+    // if(!_users[idUser]->isAuthenticated())
+    //     _postman->sendReply(idUser, ERR_NOTREGISTERED(_users[idUser]->getNickname()));
+    // else if(request.size() > 2)
+    //     _postman->sendReply(idUser, ERR_NEEDMOREPARAMS(_users[idUser]->getNickname(), "PART, you can't use ':'"));
+    // else if (request.size() == 1)
+    //     _postman->sendReply(idUser, ERR_NEEDMOREPARAMS(_users[idUser]->getNickname(), "PART, you can't use ':'"));
+    // else
+    // {
+    //     std::vector<std::string>    channelTarget = utils::splitByChar(request[SECOND], ',');
+    //     for(std::vector<std::string>::iterator  listChannel = channelTarget.begin();
+    //                                             listChannel != channelTarget.end(); ++listChannel)
+    //     {
+    //         if(_channels.find(*listChannel) == _channels.end())
+    //             _postman->sendReply(idUser, ERR_NOSUCHCHANNEL(_users[idUser]->getNickname(), *listChannel));
+    //         else
+    //             _channels[*listChannel]->removeUser(_users[idUser]);
+    //     }
+    // }
+
 }

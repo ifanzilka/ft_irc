@@ -39,6 +39,7 @@ class Channel
 
         void    displayTopic(ClientIrc *cleint);
         void    FirstMessage(ClientIrc *cleint);
+        void    sendNamesOnline(ClientIrc *client);
         
         //std::string getChannelName(); 
 

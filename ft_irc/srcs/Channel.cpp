@@ -17,11 +17,20 @@ Channel::Channel(std::string name, std::string pass, ClientIrc * main_client,Irc
 void Channel::AddClinet(ClientIrc *client)
 {
     _clients.push_back(client);
+    FirstMessage(client);
 }
 
 void Channel::RemoveClient(ClientIrc *client)
 {
-    _clients.erase(std::find(_clients.begin(), _clients.end(), client));
+    if(!IsByClient(client))
+    {
+        _IrcServer->SendInFd(client->getFd(), ERR_NOTONCHANNEL(client->getNickName(),this->GetChannelName()));
+    }
+    else
+    {
+        _clients.erase(std::find(_clients.begin(), _clients.end(), client));
+        sendEveryone(RPL_PART(client->getNickName(), this->GetChannelName(), "QUITED"), nullptr);
+    }
 }
 
 
@@ -115,19 +124,32 @@ void    Channel::displayTopic(ClientIrc *client)
     }
 }
 
+void Channel::sendNamesOnline(ClientIrc *client)
+{
+
+    if (!IsByClient(client))
+    {
+        _IrcServer->SendInFd(client->getFd(), ERR_NOTONCHANNEL(client->getNickName(), this->GetChannelName()));
+    }
+    else
+    {
+        for (std::vector<ClientIrc *>::iterator Client_iter = _clients.begin(); Client_iter != _clients.end(); Client_iter++)
+        {
+            _IrcServer->SendInFd(client->getFd(), RPL_NAMREPLY(client->getNickName(), this->GetChannelName(), (*Client_iter)->getFullname()));
+        }
+            _IrcServer->SendInFd(client->getFd(), RPL_ENDOFNAMES(client->getNickName(), this->GetChannelName()));
+    }
+}
+
+
 void    Channel::FirstMessage(ClientIrc *client)
 {
-    // std::string     bufHistoryMsg = "";
-
-    // sendEveryone(RPL_JOIN(newUser->getFullname(), this->_nameChannel), nullptr);
-    // displayTopic(newUser);
-    // for(std::vector<User *>::iterator itUserList = _userList.begin(); itUserList != _userList.end(); ++itUserList){
-    //     sendNamesOnline(*itUserList);
-    // }
-
     sendEveryone(RPL_JOIN(client->getFullname(), this->_channelName), nullptr);
     displayTopic(client);
-
+    for (std::vector<ClientIrc *>::iterator Client_iter = _clients.begin(); Client_iter != _clients.end(); Client_iter++)
+    {
+        sendNamesOnline(*Client_iter);
+    }
 
 }
 

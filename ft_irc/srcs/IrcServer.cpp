@@ -47,6 +47,7 @@ void IrcServer::InitComands()
     _commands["WALLOPS"] = &IrcServer::WALLOPS;
     _commands["OPER"] = &IrcServer::OPER;
     _commands["JOIN"] = &IrcServer::JOIN;
+    _commands["PART"] = &IrcServer::PART;
 }
 
 
