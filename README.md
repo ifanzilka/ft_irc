@@ -8,7 +8,7 @@
 ### Supported clients :
 - Netcat 
   ` nc localhost [port]`
-- LimeChat
+- [pidgin](https://pidgin.im/)
 - [Adium MacOS](https://adium.im/)
 
 
